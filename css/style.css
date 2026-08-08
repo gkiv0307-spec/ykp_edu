@@ -4631,6 +4631,40 @@ footer {
   }
 }
 
+/* Real blog listing CTA link (anchor twin of .property-feed-card > button) — added for static rebuild */
+.property-feed-cta {
+  color: #fff;
+  text-decoration: none;
+  background: #120f0c;
+  border: 0;
+  border-top: 1px solid #ffffff1f;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 62px;
+  padding: 0 22px;
+  font-size: 12px;
+  font-weight: 900;
+  transition:
+    color 0.2s,
+    background 0.2s;
+  display: flex;
+}
+.property-feed-cta span {
+  color: var(--card-accent);
+  font-size: 16px;
+  transition:
+    transform 0.2s,
+    color 0.2s;
+}
+.property-feed-cta:hover {
+  color: #15110d;
+  background: var(--card-accent);
+}
+.property-feed-cta:hover span {
+  color: #15110d;
+  transform: translate(4px);
+}
+
 /* Lightbox (review image enlarge) — added for static rebuild */
 .lightbox {
   position: fixed;

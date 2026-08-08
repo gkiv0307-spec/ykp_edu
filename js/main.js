@@ -52,7 +52,8 @@
 
   /* Region filter */
   const filterBar = document.querySelector('.filter-bar');
-  const propertyCards = document.querySelectorAll('.property-grid .property-card');
+  const propertyCards = document.querySelectorAll('.property-feed-grid .property-feed-card');
+  const filterEmpty = document.querySelector('.filter-empty');
   if (filterBar) {
     filterBar.addEventListener('click', (e) => {
       const btn = e.target.closest('button');
@@ -60,10 +61,13 @@
       filterBar.querySelectorAll('button').forEach((b) => b.classList.remove('active'));
       btn.classList.add('active');
       const region = btn.textContent.trim();
+      let visibleCount = 0;
       propertyCards.forEach((card) => {
         const show = region === '전체' || card.dataset.region === region;
         card.style.display = show ? '' : 'none';
+        if (show) visibleCount += 1;
       });
+      if (filterEmpty) filterEmpty.hidden = visibleCount > 0;
     });
   }
 
@@ -78,12 +82,13 @@
     const slides = Array.from(propertyCards)
       .slice(0, 3)
       .map((card) => ({
-        region: card.querySelector('.region')?.textContent || '',
-        type: card.querySelector('.property-card-overlay > span')?.textContent || '',
-        price: card.querySelector('.property-card-overlay > strong')?.textContent || '',
-        title: card.querySelector('h3')?.textContent || '',
-        desc: card.querySelector('.property-card-overlay > p')?.textContent || '',
-        visualClass: Array.from(card.querySelector('.property-image').classList).find((c) => c.startsWith('visual-')) || 'visual-1',
+        region: card.querySelector('.property-feed-price small')?.textContent || '',
+        type: card.querySelector('.property-feed-badges span')?.textContent || '',
+        price: card.querySelector('.property-feed-price strong')?.textContent || '',
+        title: card.querySelector('.property-feed-overlay h3')?.textContent || '',
+        desc: (card.querySelector('.property-feed-cta')?.textContent || '').replace('↗', '').trim(),
+        img: card.querySelector('.property-feed-visual img')?.getAttribute('src') || '',
+        href: card.querySelector('.property-feed-link')?.getAttribute('href') || '#',
       }));
 
     let heroIndex = 0;
@@ -92,9 +97,13 @@
     function renderHero(i) {
       const s = slides[i];
       heroWindow.innerHTML =
-        '<a class="hero-feature-card" href="https://blog.naver.com/ykphone_edu" target="_blank" rel="noreferrer"><div class="hero-feature-image ' +
-        s.visualClass +
-        '"><span>' +
+        '<a class="hero-feature-card" href="' +
+        s.href +
+        '" target="_blank" rel="noreferrer"><div class="hero-feature-image"><img src="' +
+        s.img +
+        '" alt="' +
+        s.title +
+        '"/><span>' +
         s.region +
         '</span><time>' +
         s.type.split('·').pop().trim() +
