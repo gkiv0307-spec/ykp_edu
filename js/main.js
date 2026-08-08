@@ -92,7 +92,7 @@
     function renderHero(i) {
       const s = slides[i];
       heroWindow.innerHTML =
-        '<button type="button" class="hero-feature-card"><div class="hero-feature-image ' +
+        '<a class="hero-feature-card" href="https://blog.naver.com/ykphone_edu" target="_blank" rel="noreferrer"><div class="hero-feature-image ' +
         s.visualClass +
         '"><span>' +
         s.region +
@@ -104,7 +104,7 @@
         s.desc +
         '</p><div><strong>' +
         s.price +
-        '</strong><b>상세 분석 보기 ↗</b></div></div></button>';
+        '</strong><b>상세 분석 보기 ↗</b></div></div></a>';
       if (heroDotsWrap) {
         const dots = heroDotsWrap.querySelectorAll('button');
         dots.forEach((d, di) => d.classList.toggle('active', di === i));
