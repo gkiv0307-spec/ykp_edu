@@ -155,9 +155,8 @@
     restartTimer();
   }
 
-  /* Course finder quiz (single question -> recommended course) */
+  /* Course finder quiz (3 questions -> recommended course) */
   const quiz = document.querySelector('.course-quiz');
-  const quizQuestion = quiz ? quiz.querySelector('.quiz-question') : null;
   const RESULTS = {
     beginner: {
       badge: 'RECOMMENDED',
@@ -192,15 +191,122 @@
       cta: '1:1 컨설팅 알아보기',
     },
   };
-  const QUIZ_OPTION_RESULTS = ['beginner', 'intermediate', 'coaching', 'consulting'];
+
+  const QUESTIONS = [
+    {
+      label: 'QUESTION 01',
+      title: '현재 경매 경험은 어느 정도인가요?',
+      subtitle: '지금 상태와 가장 가까운 답을 선택해 주세요.',
+      options: [
+        { title: '경매가 완전히 처음이에요', detail: '용어와 절차부터 차근차근 배우고 싶어요.', result: 'beginner' },
+        { title: '기본 용어와 권리분석은 알아요', detail: '좋은 물건을 고르고 수익을 계산하는 게 어려워요.', result: 'intermediate' },
+        { title: '입찰 경험이 있고 실제 낙찰을 원해요', detail: '입찰할 물건을 찾고 낙찰까지 집중하고 싶어요.', result: 'coaching' },
+        { title: '시간이 부족해 전문가 도움이 필요해요', detail: '대표와 1:1로 빠르게 진행하고 싶어요.', result: 'consulting' },
+      ],
+    },
+    {
+      label: 'QUESTION 02',
+      title: '지금 가장 필요한 도움은 무엇인가요?',
+      subtitle: '가장 아쉬운 부분에 가까운 답을 선택해 주세요.',
+      options: [
+        { title: '용어·절차 같은 기초 지식', detail: '등기부, 권리분석 같은 기본기가 아직 부족해요.', result: 'beginner' },
+        { title: '수익 계산과 권리분석 실력', detail: '물건은 보이는데 확신을 갖고 판단하기 어려워요.', result: 'intermediate' },
+        { title: '매주 추천 물건과 낙찰 전략', detail: '좋은 물건을 꾸준히 추천받고 싶어요.', result: 'coaching' },
+        { title: '물건 선정부터 낙찰까지 전담 관리', detail: '처음부터 끝까지 전문가가 맡아줬으면 해요.', result: 'consulting' },
+      ],
+    },
+    {
+      label: 'QUESTION 03',
+      title: '어떤 방식으로 진행하고 싶으신가요?',
+      subtitle: '편하게 느껴지는 학습·진행 방식을 선택해 주세요.',
+      options: [
+        { title: '처음부터 차근차근, 정해진 커리큘럼', detail: '순서대로 배우면서 기본기를 쌓고 싶어요.', result: 'beginner' },
+        { title: '실전 사례 중심으로 감각 키우기', detail: '실제 사례를 보며 판단력을 키우고 싶어요.', result: 'intermediate' },
+        { title: '매주 브리핑 받으며 낙찰에 집중', detail: '꾸준한 물건 브리핑과 피드백이 필요해요.', result: 'coaching' },
+        { title: '대표와 1:1로 빠르게', detail: '혼자 고민하지 않고 바로 진행하고 싶어요.', result: 'consulting' },
+      ],
+    },
+  ];
+
+  let quizStep = 0;
+  const quizAnswers = [];
+
+  function renderQuizProgress() {
+    const pct = (((quizStep >= QUESTIONS.length ? QUESTIONS.length : quizStep + 1) / QUESTIONS.length) * 100).toFixed(6);
+    return (
+      '<div class="quiz-progress"><div><span>나에게 맞는 과정 진단</span><strong>' +
+      Math.min(quizStep + 1, QUESTIONS.length) +
+      ' / ' +
+      QUESTIONS.length +
+      '</strong></div><i aria-hidden="true"><b style="width:' +
+      pct +
+      '%"></b></i></div>'
+    );
+  }
+
+  function renderQuizQuestion() {
+    if (!quiz) return;
+    const q = QUESTIONS[quizStep];
+    const optionsHtml = q.options
+      .map(
+        (opt, i) =>
+          '<button type="button" data-result="' +
+          opt.result +
+          '"><span>' +
+          String(i + 1).padStart(2, '0') +
+          '</span><div><strong>' +
+          opt.title +
+          '</strong><small>' +
+          opt.detail +
+          '</small></div><b aria-hidden="true">→</b></button>'
+      )
+      .join('');
+    quiz.innerHTML =
+      renderQuizProgress() +
+      '<div class="quiz-question"><small>' +
+      q.label +
+      '</small><h3>' +
+      q.title +
+      '</h3><p>' +
+      q.subtitle +
+      '</p><div class="quiz-options">' +
+      optionsHtml +
+      '</div></div>';
+    quiz.querySelectorAll('.quiz-options button').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        quizAnswers.push(btn.dataset.result);
+        quizStep += 1;
+        if (quizStep >= QUESTIONS.length) {
+          showQuizResult(computeQuizResult(quizAnswers));
+        } else {
+          renderQuizQuestion();
+        }
+      });
+    });
+  }
+
+  function computeQuizResult(answers) {
+    const counts = {};
+    answers.forEach((key) => {
+      counts[key] = (counts[key] || 0) + 1;
+    });
+    let best = answers[0];
+    let bestCount = 0;
+    answers.forEach((key) => {
+      if (counts[key] > bestCount) {
+        best = key;
+        bestCount = counts[key];
+      }
+    });
+    return best;
+  }
 
   function showQuizResult(resultKey) {
     if (!quiz) return;
     const r = RESULTS[resultKey];
-    const resultEl = document.createElement('div');
-    resultEl.className = 'quiz-result';
-    resultEl.innerHTML =
-      '<small>진단 결과</small><span class="quiz-result-badge">' +
+    quiz.innerHTML =
+      renderQuizProgress() +
+      '<div class="quiz-result"><small>진단 결과</small><span class="quiz-result-badge">' +
       r.badge +
       '</span><h3>' +
       r.title +
@@ -212,19 +318,15 @@
       r.href +
       '">' +
       r.cta +
-      ' <span>→</span></a><button type="button">다시 진단하기</button>';
-    quiz.replaceChild(resultEl, quiz.querySelector('.quiz-question') || quiz.querySelector('.quiz-result'));
-    resultEl.querySelector('button').addEventListener('click', () => {
-      quiz.replaceChild(quizQuestion, resultEl);
+      ' <span>→</span></a><button type="button">다시 진단하기</button></div>';
+    quiz.querySelector('.quiz-result > button').addEventListener('click', () => {
+      quizStep = 0;
+      quizAnswers.length = 0;
+      renderQuizQuestion();
     });
   }
 
-  if (quizQuestion) {
-    const options = quizQuestion.querySelectorAll('.quiz-options button');
-    options.forEach((btn, i) => {
-      btn.addEventListener('click', () => showQuizResult(QUIZ_OPTION_RESULTS[i]));
-    });
-  }
+  if (quiz) renderQuizQuestion();
 
   /* Review tabs */
   const reviewTabs = document.querySelectorAll('.review-tabs button[role="tab"]');
