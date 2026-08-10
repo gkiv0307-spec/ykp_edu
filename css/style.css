@@ -2948,9 +2948,10 @@ button.review-card:hover .review-image img {
 }
 .instagram-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-  max-width: 900px;
+  gap: 16px;
+  max-width: 1180px;
   margin: 0 auto;
+  padding: 0 24px;
   display: grid;
 }
 .instagram-empty {
@@ -4733,18 +4734,6 @@ footer {
   position: absolute;
   right: 12px;
   bottom: 12px;
-}
-.youtube-format {
-  color: #15110d;
-  background: var(--gold-light, #e1c98f);
-  border-radius: 4px;
-  padding: 4px 9px;
-  font-size: 10px;
-  font-weight: 900;
-  letter-spacing: 0.04em;
-  position: absolute;
-  left: 12px;
-  top: 12px;
 }
 .youtube-meta {
   padding: 20px 22px 24px;
