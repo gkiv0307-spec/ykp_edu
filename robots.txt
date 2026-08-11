@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: http://xn--289av8kwmfs4dv2e.store/sitemap.xml
