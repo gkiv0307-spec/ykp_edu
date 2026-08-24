@@ -1446,6 +1446,39 @@ a {
   font-size: 8px;
   font-weight: 800;
 }
+.property-feed-badges time.badge-dday.urgent {
+  background: #c0392bd9;
+  border-color: #ff6b5c;
+  color: #fff;
+}
+.property-feed-badges time.badge-sold {
+  background: #c0392bd9;
+  border-color: #ff6b5c;
+  color: #fff;
+}
+.property-feed-card.is-sold-out .property-feed-visual > img {
+  filter: grayscale(1) brightness(0.5);
+}
+.property-feed-card.is-sold-out .property-feed-visual:hover > img,
+.property-feed-card.is-sold-out:hover .property-feed-visual > img {
+  transform: none;
+}
+.sold-out-stamp {
+  position: absolute;
+  z-index: 5;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-9deg);
+  border: 3px solid #fff;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  padding: 9px 20px;
+  background: #c0392be0;
+  text-shadow: 0 2px 6px #000;
+  white-space: nowrap;
+}
 .property-feed-overlay {
   z-index: 3;
   color: #fff;
