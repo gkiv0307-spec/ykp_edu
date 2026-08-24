@@ -52,24 +52,51 @@
 
   /* Region filter */
   const filterBar = document.querySelector('.filter-bar');
-  const propertyCards = document.querySelectorAll('.property-feed-grid .property-feed-card');
+  const propertyGrids = document.querySelectorAll('.property-feed-grid');
+  const propertyCards = document.querySelectorAll('.property-feed-grid[data-status-panel="active"] .property-feed-card');
   const filterEmpty = document.querySelector('.filter-empty');
+
+  function applyRegionFilter(region) {
+    let visibleCount = 0;
+    propertyGrids.forEach((grid) => {
+      const gridVisible = !grid.hidden;
+      grid.querySelectorAll('.property-feed-card').forEach((card) => {
+        const show = region === '전체' || card.dataset.region === region;
+        card.style.display = show ? '' : 'none';
+        if (show && gridVisible) visibleCount += 1;
+      });
+    });
+    if (filterEmpty) filterEmpty.hidden = visibleCount > 0;
+  }
+
   if (filterBar) {
     filterBar.addEventListener('click', (e) => {
       const btn = e.target.closest('button');
       if (!btn) return;
       filterBar.querySelectorAll('button').forEach((b) => b.classList.remove('active'));
       btn.classList.add('active');
-      const region = btn.textContent.trim();
-      let visibleCount = 0;
-      propertyCards.forEach((card) => {
-        const show = region === '전체' || card.dataset.region === region;
-        card.style.display = show ? '' : 'none';
-        if (show) visibleCount += 1;
-      });
-      if (filterEmpty) filterEmpty.hidden = visibleCount > 0;
+      applyRegionFilter(btn.textContent.trim());
     });
   }
+
+  /* Property status tabs (진행중 / 낙찰완료) */
+  const statusTabs = document.querySelectorAll('.status-tabs button[data-status-tab]');
+  statusTabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      statusTabs.forEach((t) => {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+      });
+      tab.classList.add('active');
+      tab.setAttribute('aria-selected', 'true');
+      const target = tab.dataset.statusTab;
+      propertyGrids.forEach((grid) => {
+        grid.hidden = grid.dataset.statusPanel !== target;
+      });
+      const activeRegionBtn = filterBar ? filterBar.querySelector('button.active') : null;
+      applyRegionFilter(activeRegionBtn ? activeRegionBtn.textContent.trim() : '전체');
+    });
+  });
 
   /* Hero property carousel (built from the property grid cards) */
   const heroWindow = document.querySelector('.hero-feature-window');
