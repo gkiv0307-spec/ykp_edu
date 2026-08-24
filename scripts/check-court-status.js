@@ -102,7 +102,10 @@ async function main() {
   const withCourt = cards.filter((c) => c.court);
   console.log(`found ${cards.length} cards, ${withCourt.length} have verified case numbers`);
 
-  const browser = await puppeteer.launch({ headless: "new" });
+  const browser = await puppeteer.launch({
+    headless: "new",
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
   const page = await browser.newPage();
   await page.setViewport({ width: 1400, height: 1000 });
 
