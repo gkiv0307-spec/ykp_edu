@@ -1,0 +1,15 @@
+{
+  "name": "ykp_edu",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "update-instagram": "node scripts/update-instagram.js",
+    "check-court-status": "node scripts/check-court-status.js"
+  },
+  "devDependencies": {
+    "puppeteer": "^23.0.0"
+  },
+  "allowScripts": {
+    "puppeteer@23.11.1": true
+  }
+}
