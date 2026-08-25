@@ -1,3 +1,5 @@
 .claude/settings.local.json
 artifact_build.html
 node_modules/
+daegu_apt_raw.json
+daegu_apt_parsed.json
