@@ -4,7 +4,11 @@
   "version": "1.0.0",
   "scripts": {
     "update-instagram": "node scripts/update-instagram.js",
-    "check-court-status": "node scripts/check-court-status.js"
+    "check-court-status": "node scripts/check-court-status.js",
+    "update-listings": "node scripts/update-listings.mjs"
+  },
+  "dependencies": {
+    "sharp": "^0.34.4"
   },
   "devDependencies": {
     "puppeteer": "^23.0.0"

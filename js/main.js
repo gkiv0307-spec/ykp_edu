@@ -56,17 +56,108 @@
   const propertyCards = document.querySelectorAll('.property-feed-grid[data-status-panel="active"] .property-feed-card');
   const filterEmpty = document.querySelector('.filter-empty');
 
-  function applyRegionFilter(region) {
-    let visibleCount = 0;
+  /* 물건이 많아 한 화면에 다 넣지 않고 페이지로 나눠 보여준다. */
+  const PAGE_SIZE = 9;
+  const pagination = document.querySelector('.feed-pagination');
+  const pageNums = document.querySelector('.feed-page-nums');
+  const pagePrev = document.querySelector('.feed-page-prev');
+  const pageNext = document.querySelector('.feed-page-next');
+
+  let currentRegion = '전체';
+  let currentPage = 1;
+
+  function activeGrid() {
+    return Array.from(propertyGrids).find((g) => !g.hidden) || propertyGrids[0];
+  }
+
+  /** 지금 탭 + 지금 지역에 해당하는 카드들 */
+  function matchingCards() {
+    const grid = activeGrid();
+    if (!grid) return [];
+    return Array.from(grid.querySelectorAll('.property-feed-card')).filter(
+      (card) => currentRegion === '전체' || card.dataset.region === currentRegion,
+    );
+  }
+
+  function renderPageButtons(totalPages) {
+    if (!pageNums) return;
+    pageNums.textContent = '';
+
+    /* 페이지가 많아도 버튼은 1 … 3 4 5 … N 형태로만 */
+    const wanted = new Set([1, totalPages, currentPage, currentPage - 1, currentPage + 1]);
+    const pages = [...wanted].filter((n) => n >= 1 && n <= totalPages).sort((a, b) => a - b);
+
+    let prev = 0;
+    pages.forEach((n) => {
+      if (n - prev > 1) {
+        const gap = document.createElement('span');
+        gap.className = 'feed-page-gap';
+        gap.textContent = '…';
+        pageNums.appendChild(gap);
+      }
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = String(n);
+      if (n === currentPage) b.setAttribute('aria-current', 'page');
+      b.addEventListener('click', () => {
+        currentPage = n;
+        render();
+        document.getElementById('properties')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      pageNums.appendChild(b);
+      prev = n;
+    });
+  }
+
+  function render() {
+    const cards = matchingCards();
+    const totalPages = Math.max(1, Math.ceil(cards.length / PAGE_SIZE));
+    if (currentPage > totalPages) currentPage = totalPages;
+
+    /* 다른 탭 카드는 전부 숨기고, 현재 탭에서는 이번 페이지 것만 보인다. */
     propertyGrids.forEach((grid) => {
-      const gridVisible = !grid.hidden;
       grid.querySelectorAll('.property-feed-card').forEach((card) => {
-        const show = region === '전체' || card.dataset.region === region;
-        card.style.display = show ? '' : 'none';
-        if (show && gridVisible) visibleCount += 1;
+        card.style.display = 'none';
       });
     });
-    if (filterEmpty) filterEmpty.hidden = visibleCount > 0;
+    const from = (currentPage - 1) * PAGE_SIZE;
+    cards.slice(from, from + PAGE_SIZE).forEach((card) => {
+      card.style.display = '';
+    });
+
+    if (filterEmpty) filterEmpty.hidden = cards.length > 0;
+    if (pagination) {
+      pagination.hidden = totalPages <= 1;
+      if (pagePrev) pagePrev.disabled = currentPage <= 1;
+      if (pageNext) pageNext.disabled = currentPage >= totalPages;
+      renderPageButtons(totalPages);
+    }
+  }
+
+  function applyRegionFilter(region) {
+    currentRegion = region;
+    currentPage = 1;
+    render();
+  }
+
+  if (pagePrev) {
+    pagePrev.addEventListener('click', () => {
+      if (currentPage > 1) {
+        currentPage -= 1;
+        render();
+        document.getElementById('properties')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  }
+  if (pageNext) {
+    pageNext.addEventListener('click', () => {
+      const totalPages = Math.max(1, Math.ceil(matchingCards().length / PAGE_SIZE));
+      if (currentPage < totalPages) {
+        currentPage += 1;
+        render();
+        document.getElementById('properties')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
   }
 
   if (filterBar) {
@@ -78,6 +169,8 @@
       applyRegionFilter(btn.textContent.trim());
     });
   }
+
+  if (propertyGrids.length) render();
 
   /* Property status tabs (진행중 / 낙찰완료) */
   const statusTabs = document.querySelectorAll('.status-tabs button[data-status-tab]');
