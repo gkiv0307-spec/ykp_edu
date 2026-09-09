@@ -1414,14 +1414,19 @@ a {
   inset: 0;
 }
 .property-feed-visual:after {
+  /* Thumbnails are auto-pulled from blog posts, which are themselves busy
+     graphic banners (bold text/color blocks), not plain photos — the old
+     bottom-weighted gradient left the top/mid busy enough to fight with our
+     own badges and price text. Darkened throughout so overlaid text stays
+     legible regardless of what the source thumbnail looks like. */
   z-index: 1;
   background:
     linear-gradient(
       to bottom,
-      #07050342 0%,
-      #07050357 32%,
-      #070503db 67%,
-      #050403fc 100%
+      #07050373 0%,
+      #07050385 28%,
+      #050403e8 58%,
+      #030201fc 100%
     ),
     linear-gradient(120deg, var(--card-accent), transparent 52%);
   inset: 0;
@@ -1431,10 +1436,10 @@ a {
     background:
       linear-gradient(
         to bottom,
-        #07050342 0%,
-        #07050357 32%,
-        #070503db 67%,
-        #050403fc 100%
+        #07050373 0%,
+        #07050385 28%,
+        #050403e8 58%,
+        #030201fc 100%
       ),
       linear-gradient(
         120deg,
@@ -1480,12 +1485,13 @@ a {
   padding: 7px 10px;
   font-size: 9px;
   font-weight: 900;
+  box-shadow: 0 1px 8px #000000a8;
 }
 .property-feed-badges time {
   color: #ffffffe6;
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
-  background: #0a08067a;
+  background: #050403b8;
   border: 1px solid #ffffff47;
   padding: 6px 9px;
   font-size: 8px;
@@ -1533,6 +1539,10 @@ a {
   bottom: 0;
   left: 0;
   right: 0;
+  /* Belt-and-suspenders on top of the visual's own gradient — guarantees
+     legible price/title text even against a thumbnail that's bright or
+     busy all the way to the bottom edge. */
+  background: linear-gradient(to top, #030201f0 0%, #030201c2 55%, transparent 100%);
 }
 .property-feed-price {
   border-left: 3px solid var(--card-accent);
