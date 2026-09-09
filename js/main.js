@@ -172,6 +172,50 @@
 
   if (propertyGrids.length) render();
 
+  /* Property card "카톡 상담" button — Kakao open chat has no URL param to
+     pre-fill a message, so we copy the inquiry text to the clipboard and
+     open the chat; the visitor just pastes it in. */
+  const kakaoLink = document.querySelector('.floating-consult-kakao');
+  const kakaoUrl = kakaoLink ? kakaoLink.getAttribute('href') : null;
+  let consultToastTimer = null;
+
+  function showConsultToast(message) {
+    let toast = document.querySelector('.consult-toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.className = 'consult-toast';
+      document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    toast.classList.add('show');
+    clearTimeout(consultToastTimer);
+    consultToastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
+  }
+
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.property-feed-consult');
+    if (!btn) return;
+    const msg = btn.dataset.consultMsg || '';
+    const openChat = () => {
+      if (kakaoUrl) window.open(kakaoUrl, '_blank', 'noopener');
+    };
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(msg).then(
+        () => {
+          showConsultToast('상담 문구가 복사됐어요. 채팅창에 붙여넣기(Ctrl+V)만 해주세요!');
+          openChat();
+        },
+        () => {
+          showConsultToast(`채팅창에서 "${msg}" 라고 문의해주세요!`);
+          openChat();
+        },
+      );
+    } else {
+      showConsultToast(`채팅창에서 "${msg}" 라고 문의해주세요!`);
+      openChat();
+    }
+  });
+
   /* Property status tabs (진행중 / 낙찰완료) */
   const statusTabs = document.querySelectorAll('.status-tabs button[data-status-tab]');
   statusTabs.forEach((tab) => {
@@ -206,7 +250,7 @@
         type: card.querySelector('.property-feed-badges span')?.textContent || '',
         price: card.querySelector('.property-feed-price strong')?.textContent || '',
         title: card.querySelector('.property-feed-overlay h3')?.textContent || '',
-        desc: (card.querySelector('.property-feed-cta')?.textContent || '').replace('↗', '').trim(),
+        desc: (card.querySelector('.property-feed-cta-link')?.textContent || '').replace('↗', '').trim(),
         img: card.querySelector('.property-feed-visual img')?.getAttribute('src') || '',
         href: card.querySelector('.property-feed-link')?.getAttribute('href') || '#',
       }));

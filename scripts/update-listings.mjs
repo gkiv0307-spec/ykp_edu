@@ -404,6 +404,15 @@ function renderCard(l, i, sold) {
   const stamp = sold ? '<div class="sold-out-stamp">낙찰완료</div>' : '';
   const courtAttr = l.court ? ` data-court="${escapeHtml(l.court)}"` : '';
 
+  /* 상담 CTA: 카카오 오픈채팅은 URL로 메시지를 미리 채워 넣는 기능이 없어서,
+     클릭 시 문의 문구를 클립보드에 복사한 뒤 채팅방을 열어준다
+     (js/main.js 의 .property-feed-consult 클릭 핸들러). */
+  const consultMsg = `${l.caseNo || l.name} 물건 상담 문의드립니다.`;
+  const consultBtn = sold
+    ? ''
+    : `<button type="button" class="property-feed-consult" data-consult-msg="${escapeHtml(consultMsg)}">` +
+      `카톡 상담<span>💬</span></button>`;
+
   return `<article class="property-feed-card ${accent}${sold ? ' is-sold-out' : ''}" data-region="${escapeHtml(region)}"${courtAttr}>` +
     `<a class="property-feed-link" href="${escapeHtml(l.link)}" target="_blank" rel="noreferrer">` +
     `<div class="property-feed-visual">${stamp}` +
@@ -412,7 +421,10 @@ function renderCard(l, i, sold) {
     `<div class="property-feed-overlay"><div class="property-feed-price">` +
     `<small>${escapeHtml(place)}</small><strong>${escapeHtml(price)}</strong></div>` +
     `<h3>${escapeHtml(l.name)}</h3></div></div></a>` +
-    `<a class="property-feed-cta" href="${escapeHtml(l.link)}" target="_blank" rel="noreferrer">${escapeHtml(ctaBits)}<span>↗</span></a>` +
+    `<div class="property-feed-cta">` +
+    `<a class="property-feed-cta-link" href="${escapeHtml(l.link)}" target="_blank" rel="noreferrer">${escapeHtml(ctaBits)}<span>↗</span></a>` +
+    consultBtn +
+    `</div>` +
     `</article>`;
 }
 
