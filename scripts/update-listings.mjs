@@ -477,7 +477,7 @@ function patchIndex(html, { filterBar, statusTabs, grids, updatedLabel }) {
 
   out = out.replace(
     /<div class="sample-notice">[\s\S]*?<\/div>/,
-    `<div class="sample-notice"><strong>블로그 연동</strong>옆커폰부동산에듀 블로그에 올라온 최신 물건입니다. 카드를 누르면 해당 글로 이동합니다. <em class="feed-updated">${updatedLabel} 기준</em></div>`,
+    `<div class="sample-notice"><strong>블로그 연동</strong>블로그에 올라온 최신 물건을 매일 자동으로 가져옵니다. 카드를 누르면 물건 상세정보를 볼 수 있습니다. <em class="feed-updated">${updatedLabel} 기준</em></div>`,
   );
 
   const start = out.indexOf('<div class="property-feed-grid"');

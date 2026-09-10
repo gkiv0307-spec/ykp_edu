@@ -5693,3 +5693,295 @@ footer {
     font-size: 19px;
   }
 }
+
+/* ══ 모바일 하단 상담 바 ═══════════════════════════════════════
+   전에는 오른쪽에 떠 있는 버튼 두 개였는데, 본문 위에 겹쳐서
+   수강료·물건 금액을 가렸다. 화면 아래에 붙이고 body 에 그만큼
+   여백을 주면 어떤 내용도 가리지 않는다.
+   덤으로 터치 영역이 커지고 상담신청이 항상 보인다. */
+.floating-consult-apply {
+  background: var(--gold);
+  color: #1a1206;
+}
+.floating-consult-apply .floating-consult-icon {
+  background: #1a1206;
+  color: var(--gold);
+}
+
+@media (max-width: 720px) {
+  body {
+    /* 하단 바 높이 + 여유. 이게 없으면 마지막 내용이 바에 가린다. */
+    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  }
+  .floating-consult {
+    inset: auto 0 0;
+    z-index: 79;
+    grid-template-columns: 1fr 1fr 1.25fr;
+    gap: 0;
+    filter: none;
+    border-top: 1px solid #ffffff1f;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    display: grid;
+    position: fixed;
+  }
+  .floating-consult a {
+    border: 0;
+    border-radius: 0;
+    flex-direction: row;
+    gap: 7px;
+    width: auto;
+    min-height: 60px;
+    padding: 10px 6px;
+    font-size: 14px;
+    font-weight: 900;
+  }
+  .floating-consult a + a {
+    border-left: 1px solid #0000001f;
+  }
+  .floating-consult-icon {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+  }
+  /* 상담신청 페이지에서는 같은 버튼이 또 보일 필요가 없다 */
+  .page-apply .floating-consult {
+    grid-template-columns: 1fr 1fr;
+  }
+  .page-apply .floating-consult-apply {
+    display: none;
+  }
+}
+
+@media (max-width: 360px) {
+  .floating-consult a {
+    font-size: 13px;
+  }
+  .floating-consult-icon {
+    display: none;
+  }
+}
+
+/* ══ 가독성: 글씨 크기 하한 ═════════════════════════════════════
+   주 고객층이 40~50대인데 본문 곳곳이 8~10px 이었다.
+   읽어야 하는 정보는 13px 이상, 장식성 라벨도 11px 아래로 두지 않는다.
+   (원래 규칙을 하나씩 고치는 대신 여기에 모아둔다 — 어디를 왜 키웠는지
+    한눈에 보이고, 나중에 되돌리기도 쉽다.) */
+
+/* 섹션 머리말 */
+.eyebrow {
+  font-size: 12px;
+}
+
+/* 물건 카드 — 지역과 금액은 카드에서 가장 많이 읽히는 정보다 */
+.property-feed-price small {
+  font-size: 13px;
+}
+.property-feed-badges span,
+.property-feed-badges time {
+  font-size: 12px;
+}
+.property-feed-cta-link {
+  font-size: 13px;
+}
+.property-feed-consult,
+.property-feed-consult span {
+  font-size: 13px;
+}
+
+/* 히어로 */
+.hero-evidence span,
+.hero-feature-image span,
+.hero-feature-image time,
+.hero-feature-copy small,
+.hero-feature-controls span,
+.hero-feature-controls button {
+  font-size: 12px;
+}
+
+/* 증빙자료 */
+.evidence-checks span,
+.evidence-note,
+.official-value span {
+  font-size: 12px;
+}
+.official-value b {
+  font-size: 13px;
+}
+.verified-seal span {
+  font-size: 10px;
+}
+
+/* 과정 카드 — 수강료 판단에 직접 쓰이는 내용이라 넉넉히 */
+.course-top span,
+.course-top b,
+.course-audience small,
+.course-goal small,
+.course-price span {
+  font-size: 12px;
+}
+.course-title p,
+.course-audience span {
+  font-size: 14px;
+}
+.course-content ul li {
+  font-size: 14px;
+  line-height: 1.65;
+}
+.course-support dt {
+  font-size: 12px;
+}
+.course-support dd {
+  font-size: 14px;
+}
+
+/* 진단 퀴즈 */
+.finder-trust span,
+.quiz-question small,
+.quiz-question p {
+  font-size: 12px;
+}
+
+/* 후기 */
+.review-card-copy span {
+  font-size: 12px;
+}
+.review-card-copy small {
+  font-size: 13px;
+}
+.review-image span {
+  font-size: 11px;
+}
+
+/* 인스타그램 · 유튜브 */
+.instagram-tile-number,
+.instagram-tile-overlay small {
+  font-size: 11px;
+}
+.instagram-profile a,
+.instagram-more,
+.youtube-duration,
+.youtube-meta span {
+  font-size: 13px;
+}
+
+/* 그 외 */
+.proof-tags span,
+.consulting-route span,
+.header-call span {
+  font-size: 12px;
+}
+.filter-bar button {
+  font-size: 13px;
+}
+.article-number {
+  font-size: 13px;
+}
+.footer-links a {
+  font-size: 14px;
+}
+.sample-notice,
+.feed-updated {
+  font-size: 13px;
+}
+
+/* 위 규칙에서 놓친 곳들 — 클래스 없는 자식이라 부모 기준으로 잡는다 */
+.course-meta div small,
+.course-steps .course-step div small,
+.course-benefits div span small,
+.course-benefits h4 small,
+.course-price-options a small,
+.course-price-options a span {
+  font-size: 12px;
+}
+.course-price-options a b {
+  font-size: 13px;
+}
+.hero-proof div span,
+.hero-proof div strong .count-up,
+.hero-properties-head div span,
+.hero-feature-copy div b {
+  font-size: 12px;
+}
+.quiz-options button span,
+.quiz-options button div small {
+  font-size: 12px;
+}
+.article-grid article > span {
+  font-size: 12px;
+}
+.status-tabs button span {
+  font-size: 12px;
+}
+.status-tabs button b {
+  font-size: 13px;
+}
+.mobile-menu a small {
+  font-size: 12px;
+}
+.instagram-profile div span {
+  font-size: 13px;
+}
+
+/* 숫자 카운트업은 '300억' 처럼 단위가 붙는데 단위만 9px 이라
+   숫자와 따로 놀았다. 부모 크기를 물려받게 둔다. */
+.hero-proof strong .count-up,
+.ceo-stats strong .count-up,
+.proof-number strong .count-up {
+  font-size: inherit;
+}
+
+/* 마지막으로 남은 곳들 */
+.instagram-profile > div > span,
+.ceo-sign div span,
+.review-tabs button span {
+  font-size: 12px;
+}
+
+/* ══ 가독성: 대비 보강 ═════════════════════════════════════════
+   밝은 배경 위 회색 작은 글씨 몇 곳이 대비 기준(4.5:1)에 못 미쳤다.
+   --muted 를 통째로 바꾸면 큰 글씨까지 무거워지므로,
+   작은 글씨에만 한 단계 진한 회색을 쓴다. */
+:root {
+  --muted-strong: #4a443c;
+}
+.sample-notice,
+.feed-updated,
+.price-lead,
+.listing-crumb a,
+.apply-field label small,
+.course-support dt,
+.course-audience small,
+.course-goal small,
+.course-meta div small,
+.quiz-options button div small,
+.article-grid article > span,
+.quiz-question small,
+.quiz-question p,
+.ceo-sign div span,
+.instagram-profile > div > span,
+.listing-facts dt,
+.listing-related-grid small,
+.price-table thead th,
+.price-table tbody th small,
+.price-cell small,
+.price-opt small {
+  color: var(--muted-strong);
+}
+.eyebrow.dark {
+  color: #7a5c22;
+}
+
+/* 어두운 배경 쪽은 반대로 조금 밝혀 준다 */
+.hero-feature-controls span,
+.hero-properties-head div span {
+  color: #c4bcae;
+}
+
+/* 어두운 배경 위에 놓인 작은 글씨는 반대로 밝아야 한다.
+   (수강료 블록은 금색 배경, 유튜브 카드는 검정 배경) */
+.course-price span {
+  color: #fff;
+}
+.youtube-meta span {
+  color: #b9b0a3;
+}
