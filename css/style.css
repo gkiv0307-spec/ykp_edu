@@ -5897,7 +5897,6 @@ footer {
   font-size: 13px;
 }
 .hero-proof div span,
-.hero-proof div strong .count-up,
 .hero-properties-head div span,
 .hero-feature-copy div b {
   font-size: 12px;
@@ -5984,4 +5983,82 @@ footer {
 }
 .youtube-meta span {
   color: #b9b0a3;
+}
+
+/* ══ 히어로 행동 유도 ═══════════════════════════════════════════
+   전에는 버튼 3개가 같은 크기로 나열돼 어디를 눌러야 할지 흩어졌다.
+   가장 바라는 행동(상담 신청) 하나만 크게 두고, 그 다음(과정 진단)은
+   테두리만, 나머지는 아예 버튼에서 빼서 글자 링크로 내렸다. */
+.hero-actions {
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.hero-cta-main {
+  box-shadow: 0 10px 30px #c9a76733;
+  min-height: 56px;
+  padding: 0 30px;
+  font-size: 16px;
+  font-weight: 900;
+}
+.hero-cta-sub {
+  color: var(--gold-light);
+  background: 0 0;
+  border: 1px solid #c9a76766;
+  min-height: 56px;
+  padding: 0 24px;
+  font-size: 15px;
+  font-weight: 800;
+}
+.hero-cta-sub:hover {
+  border-color: var(--gold-light);
+  background: #c9a76714;
+}
+/* 신청 직전에 망설이게 하는 것들을 미리 걷어낸다 */
+.hero-cta-note {
+  color: #b7aea2;
+  margin: 14px 0 0;
+  font-size: 13px;
+  font-weight: 700;
+}
+.hero-links {
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 20px;
+  display: flex;
+}
+.hero-links a {
+  color: #ddd3c4;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: #ffffff40;
+  text-underline-offset: 4px;
+}
+.hero-links a:hover {
+  color: #fff;
+  text-decoration-color: #fff;
+}
+
+@media (max-width: 720px) {
+  .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .hero-cta-main,
+  .hero-cta-sub {
+    justify-content: center;
+    width: 100%;
+    min-height: 54px;
+    font-size: 15px;
+  }
+  .hero-cta-note {
+    text-align: center;
+    font-size: 12px;
+  }
+  .hero-links {
+    justify-content: center;
+    gap: 14px;
+    margin-top: 18px;
+  }
 }
