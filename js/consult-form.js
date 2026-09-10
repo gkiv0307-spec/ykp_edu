@@ -7,8 +7,11 @@
 (function () {
   'use strict';
 
-  /* 접수함 주소. 비어 있으면 카카오톡 안내로 대체된다. */
-  var FORM_ENDPOINT = '';
+  /* 접수함 주소 (구글 시트 Apps Script 웹앱). 비어 있으면 카카오톡 안내로 대체된다.
+     시트: 옆커폰부동산에듀 - 상담신청 접수함
+     스크립트를 고쳤을 때는 "배포 → 배포 관리 → 새 버전"까지 해야 반영된다.
+     설정 방법은 docs/상담신청-접수함-설정.md 참고. */
+  var FORM_ENDPOINT = 'https://script.google.com/macros/s/AKfycby_v46XaI_C-43nlxoTUOSybY4_6myH6nuvovUA7mGurfGI2U0TcwvoOH3I9qoRVJ_6qw/exec';
 
   var form = document.getElementById('consult-form');
   if (!form) return;
