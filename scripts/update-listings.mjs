@@ -13,6 +13,8 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
+import { buildListingPages, slugOf } from './build-listing-pages.mjs';
+import { buildSitemap } from './build-sitemap.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const BLOG_ID = 'ykphone_edu';
@@ -339,6 +341,8 @@ async function buildListing(item) {
     id: item.id,
     link: item.link,
     title: item.title,
+    /* 상세 페이지의 "물건 요약"에 쓴다 (앞 두 문장만 발췌) */
+    description: item.description,
     name: name || item.title.slice(0, 20),
     sido,
     sigungu,
@@ -413,8 +417,12 @@ function renderCard(l, i, sold) {
     : `<button type="button" class="property-feed-consult" data-consult-msg="${escapeHtml(consultMsg)}">` +
       `카톡 상담<span>💬</span></button>`;
 
+  /* 카드는 블로그가 아니라 사이트 안의 물건 상세 페이지로 보낸다.
+     예전에는 카드 44개가 전부 네이버로 나가서 방문자도 검색 점수도 새어나갔다. */
+  const detailHref = `/listings/${slugOf(l)}.html`;
+
   return `<article class="property-feed-card ${accent}${sold ? ' is-sold-out' : ''}" data-region="${escapeHtml(region)}"${courtAttr}>` +
-    `<a class="property-feed-link" href="${escapeHtml(l.link)}" target="_blank" rel="noreferrer">` +
+    `<a class="property-feed-link" href="${escapeHtml(detailHref)}">` +
     `<div class="property-feed-visual">${stamp}` +
     `<img src="${escapeHtml(img)}" alt="${escapeHtml(l.name)}" loading="lazy" width="720" height="540"/>` +
     `<div class="property-feed-badges"><span>${escapeHtml(badgeLeft)}</span>${badgeRight}</div>` +
@@ -422,7 +430,7 @@ function renderCard(l, i, sold) {
     `<small>${escapeHtml(place)}</small><strong>${escapeHtml(price)}</strong></div>` +
     `<h3>${escapeHtml(l.name)}</h3></div></div></a>` +
     `<div class="property-feed-cta">` +
-    `<a class="property-feed-cta-link" href="${escapeHtml(l.link)}" target="_blank" rel="noreferrer">${escapeHtml(ctaBits)}<span>↗</span></a>` +
+    `<a class="property-feed-cta-link" href="${escapeHtml(detailHref)}">${escapeHtml(ctaBits)}<span>→</span></a>` +
     consultBtn +
     `</div>` +
     `</article>`;
@@ -508,6 +516,10 @@ async function main() {
   const active = listings.filter((l) => !l.saleDate || l.saleDate >= today);
   const sold = listings.filter((l) => l.saleDate && l.saleDate < today);
 
+  /* 상세 페이지에서도 낙찰 여부를 알아야 한다 */
+  active.forEach((l) => { l.sold = false; });
+  sold.forEach((l) => { l.sold = true; });
+
   /* 진행중은 매각기일 가까운 순, 낙찰완료는 최근 기일 순 */
   active.sort((a, b) => (a.saleDate?.getTime() ?? Infinity) - (b.saleDate?.getTime() ?? Infinity));
   sold.sort((a, b) => (b.saleDate?.getTime() ?? 0) - (a.saleDate?.getTime() ?? 0));
@@ -531,9 +543,27 @@ async function main() {
     return;
   }
 
-  if (next === html) { log('· 변경 없음'); return; }
-  await writeFile(INDEX_FILE, next, 'utf8');
-  log('· index.html 갱신 완료');
+  if (next === html) {
+    log('· index.html 변경 없음');
+  } else {
+    await writeFile(INDEX_FILE, next, 'utf8');
+    log('· index.html 갱신 완료');
+  }
+
+  /* 물건 상세 페이지 — 카드가 여기로 연결된다. index.html 이 그대로여도
+     상세 페이지 쪽은 문구가 바뀌었을 수 있으니 항상 다시 만든다. */
+  await mkdir(path.join(ROOT, 'data'), { recursive: true });
+  await writeFile(
+    path.join(ROOT, 'data', 'listings.json'),
+    JSON.stringify(listings, null, 1),
+    'utf8',
+  );
+
+  const pages = await buildListingPages(ROOT, listings);
+  log(`· 물건 상세 페이지 ${pages.length}장 생성`);
+
+  await buildSitemap(ROOT, pages);
+  log('· sitemap.xml 갱신');
 
   /* 더 이상 쓰이지 않는 자동 이미지 정리 */
   const used = new Set(listings.map((l) => l.image && path.basename(l.image)).filter(Boolean));

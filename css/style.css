@@ -5082,3 +5082,444 @@ footer {
     font-size: 11px;
   }
 }
+
+/* ══ 물건 상세 페이지 ═══════════════════════════════════════════
+   본문 글씨는 16px 이상, 보조 정보도 13px 아래로 내리지 않는다.
+   주 고객층이 40~50대라 기존 8~11px 표기가 읽기 어려웠다. */
+.page-listing {
+  background: var(--paper);
+}
+.listing-detail {
+  max-width: 940px;
+  margin: 0 auto;
+  padding: 32px 20px 72px;
+}
+.listing-crumb {
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 26px;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+}
+.listing-crumb a {
+  color: var(--muted);
+}
+.listing-crumb a:hover {
+  color: var(--ink);
+}
+.listing-crumb span {
+  color: #a89e91;
+}
+.listing-crumb em {
+  color: var(--ink);
+  font-style: normal;
+}
+.listing-head h1 {
+  margin: 10px 0 0;
+  font-size: clamp(30px, 5vw, 46px);
+  line-height: 1.18;
+  letter-spacing: -0.02em;
+}
+.listing-badges {
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+  display: flex;
+}
+.listing-badges span {
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 999px;
+  padding: 8px 15px;
+  font-size: 13px;
+  font-weight: 800;
+}
+.listing-badges .is-sold {
+  border-color: #0000;
+  background: var(--ink);
+  color: #fff;
+}
+.listing-visual {
+  border-radius: 18px;
+  margin: 26px 0 0;
+  overflow: hidden;
+}
+.listing-visual img {
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  width: 100%;
+  display: block;
+}
+
+/* 물건 정보표 — 상세 페이지의 핵심. 블로그 요약이 아니라 이 표가
+   이 페이지만의 값어치다. */
+.listing-facts {
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  margin: 26px 0 0;
+  display: grid;
+  overflow: hidden;
+}
+.listing-facts > div {
+  background: #fff;
+  padding: 16px 18px;
+}
+.listing-facts dt {
+  color: var(--muted);
+  margin-bottom: 5px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.listing-facts dd {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+}
+.listing-summary {
+  margin: 34px 0 0;
+}
+.listing-summary h2,
+.listing-cta h2,
+.listing-related h2 {
+  margin: 0 0 14px;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+}
+.listing-summary p {
+  color: #3c3630;
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.75;
+}
+.listing-source {
+  color: var(--blue-deep);
+  margin-top: 14px;
+  font-size: 14px;
+  font-weight: 800;
+  display: inline-block;
+}
+
+.listing-cta {
+  background: var(--ink-soft);
+  color: #fff;
+  border-radius: 20px;
+  margin: 40px 0 0;
+  padding: 32px 28px;
+}
+.listing-cta h2 {
+  color: #fff;
+}
+.listing-cta p {
+  color: #d8cfc2;
+  margin: 0 0 22px;
+  font-size: 16px;
+  line-height: 1.7;
+}
+.listing-cta-actions {
+  flex-wrap: wrap;
+  gap: 10px;
+  display: flex;
+}
+.listing-cta-actions .button-ghost {
+  border-color: #ffffff40;
+  color: #fff;
+}
+.listing-cta-actions .button-ghost:hover {
+  border-color: #fff;
+}
+
+.listing-related {
+  margin: 48px 0 0;
+}
+.listing-related-grid {
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 16px;
+  display: grid;
+}
+.listing-related-grid a {
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 16px;
+  flex-direction: column;
+  padding-bottom: 16px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  overflow: hidden;
+}
+.listing-related-grid a:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px #2b201040;
+}
+.listing-related-grid img {
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  width: 100%;
+  margin-bottom: 14px;
+  display: block;
+}
+.listing-related-grid strong {
+  padding: 0 16px;
+  font-size: 16px;
+}
+.listing-related-grid small {
+  color: var(--muted);
+  padding: 4px 16px 0;
+  font-size: 13px;
+  font-weight: 700;
+}
+.listing-related-grid b {
+  padding: 8px 16px 0;
+  font-size: 17px;
+}
+
+@media (max-width: 640px) {
+  .listing-detail {
+    padding: 22px 16px 56px;
+  }
+  .listing-cta {
+    padding: 26px 20px;
+  }
+  .listing-cta-actions .button {
+    justify-content: center;
+    width: 100%;
+  }
+}
+
+/* ══ 상담 신청 페이지 ═══════════════════════════════════════════
+   입력칸 글씨는 16px 고정. 그보다 작으면 iOS 사파리가 화면을
+   확대해 버려서 폼이 튄다. */
+.page-apply {
+  background: var(--paper);
+}
+.apply-page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 32px 20px 80px;
+}
+.apply-head h1 {
+  margin: 10px 0 18px;
+  font-size: clamp(28px, 4.6vw, 42px);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+.apply-lead {
+  color: #3c3630;
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.7;
+}
+.apply-trust {
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+}
+.apply-trust li {
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 999px;
+  padding: 8px 15px;
+  font-size: 13px;
+  font-weight: 800;
+}
+.apply-trust li:before {
+  color: var(--blue-deep);
+  content: '✓ ';
+}
+
+.apply-form {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  margin: 30px 0 0;
+  padding: 28px 24px;
+}
+.apply-row {
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  display: grid;
+}
+.apply-field {
+  margin-bottom: 18px;
+}
+.apply-field label {
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 800;
+  display: block;
+}
+.apply-field label b {
+  color: #b3392f;
+  margin-left: 2px;
+}
+.apply-field label small {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+.apply-field input,
+.apply-field select,
+.apply-field textarea {
+  border: 1px solid #221b1440;
+  background: #fdfcfa;
+  border-radius: 12px;
+  width: 100%;
+  padding: 13px 14px;
+  font-family: inherit;
+  font-size: 16px;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+.apply-field textarea {
+  resize: vertical;
+  line-height: 1.6;
+}
+.apply-field input:focus,
+.apply-field select:focus,
+.apply-field textarea:focus {
+  border-color: var(--blue-deep);
+  outline: 0;
+  box-shadow: 0 0 0 3px #b9965533;
+}
+.apply-field input[readonly] {
+  background: #f2ede4;
+  color: var(--muted);
+}
+.apply-field .is-invalid {
+  border-color: #b3392f;
+}
+.apply-error {
+  color: #b3392f;
+  margin: 7px 0 0;
+  font-size: 13px;
+  font-weight: 700;
+}
+.apply-error:empty {
+  display: none;
+}
+
+.apply-agree {
+  align-items: flex-start;
+  gap: 10px;
+  margin: 4px 0 0;
+  font-size: 14px;
+  line-height: 1.6;
+  display: flex;
+}
+.apply-agree input {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  accent-color: var(--blue-deep);
+}
+.apply-submit {
+  justify-content: center;
+  width: 100%;
+  margin-top: 22px;
+  padding: 16px;
+  font-size: 16px;
+}
+.apply-status {
+  margin: 14px 0 0;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.6;
+}
+.apply-status:empty {
+  display: none;
+}
+.apply-status.is-ok {
+  color: #1f6b45;
+}
+.apply-status.is-warn {
+  color: #8a5a11;
+}
+.apply-status a {
+  color: var(--blue-deep);
+  text-decoration: underline;
+}
+
+.apply-alt {
+  border-top: 1px solid var(--line);
+  margin-top: 40px;
+  padding-top: 28px;
+}
+.apply-alt h2 {
+  margin: 0 0 14px;
+  font-size: 19px;
+}
+.apply-alt-actions {
+  flex-wrap: wrap;
+  gap: 10px;
+  display: flex;
+}
+
+.sr-only {
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+  width: 1px;
+  height: 1px;
+  position: absolute;
+  overflow: hidden;
+}
+
+@media (max-width: 640px) {
+  .apply-page {
+    padding: 22px 16px 60px;
+  }
+  .apply-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .apply-form {
+    padding: 22px 18px;
+  }
+  .apply-alt-actions .button {
+    justify-content: center;
+    width: 100%;
+  }
+}
+
+/* 밝은 배경 위에 놓는 테두리 버튼.
+   .button-ghost 는 흰 글씨라 어두운 배경에서만 쓸 수 있다. */
+.button-line {
+  color: var(--ink);
+  background: 0 0;
+  border: 1px solid #221b1440;
+}
+.button-line:hover {
+  border-color: var(--ink);
+  background: #221b140a;
+}
+
+/* 헤더의 상담신청 버튼 — 전환 1순위라 유일하게 채운 버튼으로 둔다 */
+.header-apply {
+  background: var(--gold);
+  color: #1a1206;
+  border-radius: 999px;
+  flex: none;
+  padding: 11px 20px;
+  font-size: 13px;
+  font-weight: 900;
+  transition: background 0.2s, transform 0.2s;
+}
+.header-apply:hover {
+  background: var(--gold-light);
+  transform: translateY(-1px);
+}
+.mobile-menu-apply strong {
+  color: var(--gold-light);
+}
+@media (max-width: 1080px) {
+  .header-apply {
+    display: none;
+  }
+}
