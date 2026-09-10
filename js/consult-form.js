@@ -103,7 +103,13 @@
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify(data),
     })
-      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r; })
+      /* 응답 코드를 성공 판정에 쓰지 않는다. 일부러 그렇게 두었다.
+         Apps Script 는 doPost 를 다 실행한 뒤에야 결과 페이지로 넘겨주는데,
+         그 결과 페이지가 이따금 404 로 온다. 그때도 시트에는 이미 기록된
+         상태라, 404 를 실패로 처리하면 접수됐는데도 실패라고 안내해
+         고객이 다시 신청하게 된다(중복 접수).
+         응답이 왔다 = 서버가 처리를 마쳤다 로 보고, 아예 도달하지 못한
+         경우(fetch 자체가 실패)만 아래 catch 에서 실패로 처리한다. */
       .then(function () {
         form.querySelectorAll('input, select, textarea, button').forEach(function (el) { el.disabled = true; });
         statusEl.className = 'apply-status is-ok';
