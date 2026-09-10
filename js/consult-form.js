@@ -73,6 +73,12 @@
   var agreeEl = document.getElementById('f-agree');
   if (agreeEl) agreeEl.addEventListener('change', function () { setError('f-agree', ''); });
 
+  /* 같은 내용이 두 번 들어오지 않도록 폼을 잠근다 */
+  function lockForm() {
+    var els = form.querySelectorAll('input, select, textarea, button');
+    for (var i = 0; i < els.length; i += 1) els[i].disabled = true;
+  }
+
   function fallbackToKakao(reason) {
     statusEl.className = 'apply-status is-warn';
     statusEl.innerHTML = reason
@@ -97,11 +103,22 @@
     statusEl.className = 'apply-status';
     statusEl.textContent = '보내는 중…';
 
+    /* 응답이 아주 늦게 오는 경우가 있어 20초에서 끊는다.
+       끊더라도 요청은 이미 서버에 닿았을 가능성이 크므로 폼은 잠근 채
+       두어, 고객이 같은 내용을 또 보내지 않게 한다. */
+    var timedOut = false;
+    var controller = ('AbortController' in window) ? new AbortController() : null;
+    var timer = setTimeout(function () {
+      timedOut = true;
+      if (controller) controller.abort();
+    }, 20000);
+
     fetch(FORM_ENDPOINT, {
       method: 'POST',
       /* Apps Script 등 단순 엔드포인트에서 preflight 를 피하려고 text/plain 으로 보낸다 */
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify(data),
+      signal: controller ? controller.signal : undefined,
     })
       /* 응답 코드를 성공 판정에 쓰지 않는다. 일부러 그렇게 두었다.
          Apps Script 는 doPost 를 다 실행한 뒤에야 결과 페이지로 넘겨주는데,
@@ -111,11 +128,22 @@
          응답이 왔다 = 서버가 처리를 마쳤다 로 보고, 아예 도달하지 못한
          경우(fetch 자체가 실패)만 아래 catch 에서 실패로 처리한다. */
       .then(function () {
-        form.querySelectorAll('input, select, textarea, button').forEach(function (el) { el.disabled = true; });
+        clearTimeout(timer);
+        lockForm();
         statusEl.className = 'apply-status is-ok';
         statusEl.textContent = '신청이 접수되었습니다. 영업일 기준 1일 안에 연락드리겠습니다.';
       })
       .catch(function () {
+        clearTimeout(timer);
+        if (timedOut) {
+          /* 요청은 갔는데 응답만 못 받은 상황. 다시 보내라고 하면 중복이 된다. */
+          lockForm();
+          statusEl.className = 'apply-status is-warn';
+          statusEl.innerHTML = '접수 확인이 늦어지고 있습니다. 신청은 접수되었을 가능성이 큽니다.'
+            + ' 확인이 필요하시면 <a href="https://open.kakao.com/o/s91CvTFf" target="_blank" rel="noreferrer">카카오톡 ↗</a>'
+            + ' 또는 <a href="tel:0532810759">053-281-0759</a> 로 문의해 주세요.';
+          return;
+        }
         submitBtn.disabled = false;
         fallbackToKakao('전송에 실패했습니다.');
       });
