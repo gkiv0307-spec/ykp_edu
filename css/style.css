@@ -6353,3 +6353,21 @@ footer {
 .course-detail-link:hover {
   background: var(--blue-deep);
 }
+
+/* 낙찰 후기 준비 중 안내 — 막다른 길이 되지 않게 갈 곳을 준다 */
+.review-placeholder-actions {
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 18px;
+  display: flex;
+}
+.review-tabs button b {
+  font-size: 12px;
+}
+@media (max-width: 640px) {
+  .review-placeholder-actions .button {
+    justify-content: center;
+    width: 100%;
+  }
+}

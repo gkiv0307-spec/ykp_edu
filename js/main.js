@@ -327,7 +327,7 @@
       title: '초급반',
       tagline: '경매가 처음이라면 여기서 시작하세요.',
       desc: '용어와 절차, 권리분석 기초부터 모의입찰까지 5주 동안 기본기를 완성합니다.',
-      href: '#course-beginner',
+      href: '/courses/beginner.html',
       cta: '초급반 자세히 보기',
     },
     intermediate: {
@@ -335,7 +335,7 @@
       title: '중급반',
       tagline: '기초는 아는데 수익 계산이 막막하다면.',
       desc: '배당표 분석, 세금, 특수물건까지 다루며 실전 투자 전략을 익히는 과정입니다.',
-      href: '#course-intermediate',
+      href: '/courses/intermediate.html',
       cta: '중급반 자세히 보기',
     },
     coaching: {
@@ -343,7 +343,7 @@
       title: '낙찰반',
       tagline: '입찰 경험이 있고 실제 낙찰이 목표라면.',
       desc: '대표 추천 물건과 본인 물건 분석, 물건 브리핑과 개별 상담으로 낙찰 성공률을 높입니다.',
-      href: '#course-coaching',
+      href: '/courses/coaching.html',
       cta: '낙찰반 자세히 보기',
     },
     consulting: {
@@ -351,7 +351,7 @@
       title: '1:1 컨설팅',
       tagline: '시간이 부족하다면 대표와 1:1로.',
       desc: '물건 선정부터 권리분석, 입찰가 산정, 낙찰 후 관리까지 맞춤으로 진행합니다.',
-      href: '#course-consulting',
+      href: '/courses/consulting.html',
       cta: '1:1 컨설팅 알아보기',
     },
   };
