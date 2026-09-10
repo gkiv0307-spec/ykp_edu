@@ -6,7 +6,7 @@
  * 헤더·푸터는 index.html 에서 그대로 가져오므로 메뉴가 바뀌어도 따로 손댈 필요가 없다.
  */
 
-import { writeFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadShell, renderPage } from './lib/shell.mjs';
@@ -32,7 +32,73 @@ const FIELDS = {
 
 const options = (list) => list.map((v) => `<option value="${v}">${v}</option>`).join('');
 
-function applyPage(shell) {
+const esc = (s) => String(s ?? '')
+  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+/**
+ * 수강료를 index.html 의 과정 카드에서 직접 읽어 온다.
+ * 금액을 여기에 또 적어두면 한쪽만 고쳐져 서로 어긋난다.
+ * (같은 이유로 가격표를 이미지로 만들지 않았다 — 금액이 바뀌면 다시 그려야 한다.)
+ */
+async function readCourses(root) {
+  const html = await readFile(path.join(root, 'index.html'), 'utf8');
+  const cards = [...html.matchAll(/<article class="course-card([^"]*)" id="([^"]+)">([\s\S]*?)<\/article>/g)];
+
+  return cards.map(([, , id, body]) => {
+    const title = body.match(/<div class="course-title"><h3>([^<]+)<\/h3><p>([^<]*)<\/p>/);
+    const meta = [...body.matchAll(/<small>(진행 방식|기간)<\/small><strong>([^<]+)<\/strong>/g)];
+
+    const single = body.match(/<div class="course-price"><strong>([^<]+)<\/strong><span>([^<]*)<\/span>/);
+    const optionBlock = body.match(/<div class="course-price-options">([\s\S]*?)<\/div>\s*<div class="course-goal"/);
+    const optionPrices = optionBlock
+      ? [...optionBlock[1].matchAll(/<small>([^<]+)<\/small><strong>([^<]+)<\/strong>/g)]
+        .map((m) => ({ label: m[1], price: m[2] }))
+      : [];
+
+    return {
+      id,
+      name: title?.[1] ?? '',
+      sub: title?.[2] ?? '',
+      method: meta.find((m) => m[1] === '진행 방식')?.[2] ?? '',
+      duration: meta.find((m) => m[1] === '기간')?.[2] ?? '',
+      price: single?.[1] ?? null,
+      note: single?.[2] ?? '',
+      optionPrices,
+    };
+  }).filter((c) => c.name);
+}
+
+/** 상담신청 페이지에 넣을 수강료 요약표 */
+function priceTable(courses) {
+  const priceCell = (c) => {
+    if (c.optionPrices.length) {
+      return c.optionPrices
+        .map((o) => `<span class="price-opt"><small>${esc(o.label)}</small><b>${esc(o.price)}</b></span>`)
+        .join('');
+    }
+    return `<b>${esc(c.price || '상담 후 안내')}</b>`
+      + (c.note ? `<small>${esc(c.note)}</small>` : '');
+  };
+
+  return '<section class="price-table" id="prices">'
+    + '<h2>수강료 한눈에 보기</h2>'
+    + '<p class="price-lead">모든 금액은 부가세와 교재비가 포함된 기준입니다. '
+    + '어떤 과정이 맞을지 모르겠다면 위에 연락처만 남겨주세요.</p>'
+    + '<div class="price-scroll"><table>'
+    + '<thead><tr><th scope="col">과정</th><th scope="col">진행 방식</th>'
+    + '<th scope="col">기간</th><th scope="col">수강료</th></tr></thead><tbody>'
+    + courses.map((c) => '<tr>'
+      + `<th scope="row"><a href="/#${esc(c.id)}">${esc(c.name)}</a><small>${esc(c.sub)}</small></th>`
+      + `<td data-label="진행 방식">${esc(c.method || '-')}</td>`
+      + `<td data-label="기간">${esc(c.duration || '-')}</td>`
+      + `<td class="price-cell" data-label="수강료">${priceCell(c)}</td>`
+      + '</tr>').join('')
+    + '</tbody></table></div>'
+    + '<a class="button button-line price-more" href="/#courses">과정별 상세 내용 보기 <span>→</span></a>'
+    + '</section>';
+}
+
+function applyPage(shell, courses) {
   const content = '<article class="apply-page">'
     + '<nav class="listing-crumb" aria-label="현재 위치">'
     + '<a href="/">홈</a><span>›</span><em>상담 신청</em></nav>'
@@ -101,6 +167,7 @@ function applyPage(shell) {
     + '<a class="button button-line" href="tel:0532810759">전화 053-281-0759</a>'
     + '</div>'
     + '</section>'
+    + priceTable(courses)
     + '</article>';
 
   return renderPage({
@@ -128,5 +195,6 @@ function applyPage(shell) {
 }
 
 const shell = await loadShell(ROOT);
-await writeFile(path.join(ROOT, 'apply.html'), applyPage(shell), 'utf8');
-console.log('· apply.html 생성');
+const courses = await readCourses(ROOT);
+await writeFile(path.join(ROOT, 'apply.html'), applyPage(shell, courses), 'utf8');
+console.log(`· apply.html 생성 (수강료 ${courses.length}개 과정 반영)`);
