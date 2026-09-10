@@ -6062,3 +6062,294 @@ footer {
     margin-top: 18px;
   }
 }
+
+/* ══ 과정 상세 페이지 ═══════════════════════════════════════════ */
+.page-course {
+  background: var(--paper);
+}
+.course-page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 32px 20px 80px;
+}
+.cp-head h1 {
+  margin: 10px 0 6px;
+  font-size: clamp(32px, 5.4vw, 50px);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+.cp-sub {
+  color: var(--muted-strong);
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+}
+.cp-goal {
+  border-left: 3px solid var(--gold);
+  margin: 22px 0 0;
+  padding-left: 14px;
+}
+.cp-goal small {
+  color: var(--muted-strong);
+  font-size: 12px;
+  font-weight: 800;
+  display: block;
+}
+.cp-goal strong {
+  margin-top: 3px;
+  font-size: 19px;
+  display: block;
+}
+.cp-summary {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  margin: 26px 0 0;
+  display: grid;
+  overflow: hidden;
+}
+.cp-summary div {
+  background: #fff;
+  padding: 15px 18px;
+}
+.cp-summary small {
+  color: var(--muted-strong);
+  font-size: 12px;
+  font-weight: 800;
+  display: block;
+}
+.cp-summary strong {
+  margin-top: 4px;
+  font-size: 17px;
+  display: block;
+}
+
+/* 수강료 — 이 페이지에서 가장 먼저 찾는 정보라 크게 둔다 */
+.cp-price,
+.cp-options {
+  background: var(--ink-soft);
+  color: #fff;
+  border-radius: 18px;
+  margin: 14px 0 0;
+  padding: 24px 26px;
+}
+.cp-price strong {
+  font-size: 30px;
+  font-weight: 900;
+  display: block;
+}
+.cp-price span {
+  color: #d8cfc2;
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  display: block;
+}
+.cp-options {
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 18px;
+  display: grid;
+}
+.cp-option small {
+  color: var(--gold-light);
+  font-size: 13px;
+  font-weight: 800;
+  display: block;
+}
+.cp-option strong {
+  margin-top: 4px;
+  font-size: 26px;
+  font-weight: 900;
+  display: block;
+}
+.cp-option span {
+  color: #d8cfc2;
+  margin-top: 5px;
+  font-size: 13px;
+  line-height: 1.55;
+  display: block;
+}
+
+.course-page section {
+  margin-top: 40px;
+}
+.course-page section h2 {
+  margin: 0 0 16px;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+}
+.course-page section h2 small {
+  color: var(--muted-strong);
+  font-size: 13px;
+  font-weight: 700;
+}
+.cp-audience ul,
+.cp-curriculum ol {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+}
+.cp-audience li,
+.cp-curriculum li {
+  border-bottom: 1px solid var(--line);
+  padding: 13px 0 13px 30px;
+  font-size: 16px;
+  line-height: 1.6;
+  position: relative;
+}
+.cp-audience li:before {
+  color: var(--blue-deep);
+  content: '✓';
+  font-weight: 900;
+  position: absolute;
+  left: 4px;
+}
+.cp-curriculum {
+  counter-reset: cp;
+}
+.cp-curriculum li {
+  counter-increment: cp;
+}
+.cp-curriculum li:before {
+  color: var(--blue-deep);
+  content: counter(cp, decimal-leading-zero);
+  font-size: 13px;
+  font-weight: 900;
+  position: absolute;
+  left: 2px;
+}
+.cp-support dl,
+.cp-benefits dl {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  margin: 0;
+  display: grid;
+  overflow: hidden;
+}
+.cp-support dl > div,
+.cp-benefits dl > div {
+  background: #fff;
+  padding: 15px 18px;
+}
+.cp-support dt,
+.cp-benefits dt {
+  color: var(--muted-strong);
+  font-size: 13px;
+  font-weight: 800;
+}
+.cp-support dd,
+.cp-benefits dd {
+  margin: 4px 0 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.cp-cta {
+  background: var(--ink-soft);
+  color: #fff;
+  border-radius: 20px;
+  padding: 32px 28px;
+}
+.cp-cta h2 {
+  color: #fff;
+}
+.cp-cta p {
+  color: #d8cfc2;
+  margin: 0 0 22px;
+  font-size: 16px;
+  line-height: 1.7;
+}
+.cp-cta-actions {
+  flex-wrap: wrap;
+  gap: 10px;
+  display: flex;
+}
+.cp-cta-actions .button-ghost {
+  border-color: #ffffff40;
+  color: #fff;
+}
+.cp-more {
+  margin: 20px 0 0;
+}
+.cp-more a {
+  color: var(--gold-light);
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.cp-others-grid {
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 14px;
+  display: grid;
+}
+.cp-others-grid a {
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 16px;
+  flex-direction: column;
+  padding: 18px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+}
+.cp-others-grid a:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px #2b201033;
+}
+.cp-others-grid small {
+  color: var(--blue-deep);
+  font-size: 12px;
+  font-weight: 900;
+}
+.cp-others-grid strong {
+  margin-top: 6px;
+  font-size: 18px;
+}
+.cp-others-grid span {
+  color: var(--muted-strong);
+  margin-top: 3px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.cp-others-grid b {
+  margin-top: 10px;
+  font-size: 15px;
+}
+
+@media (max-width: 640px) {
+  .course-page {
+    padding: 22px 16px 60px;
+  }
+  .cp-price,
+  .cp-options,
+  .cp-cta {
+    padding: 24px 20px;
+  }
+  .cp-cta-actions .button {
+    justify-content: center;
+    width: 100%;
+  }
+}
+
+/* 과정 카드에서 과정 페이지로 — 채운 버튼이라 기존 외부링크보다 먼저 눈에 든다 */
+.course-detail-link {
+  background: var(--ink);
+  color: #fff;
+  border-radius: 999px;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  padding: 13px 20px;
+  font-size: 14px;
+  font-weight: 900;
+  display: flex;
+}
+.course-detail-link:hover {
+  background: var(--blue-deep);
+}

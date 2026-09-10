@@ -19,12 +19,30 @@
   var statusEl = form.querySelector('.apply-status');
   var submitBtn = form.querySelector('.apply-submit');
 
+  var params = new URLSearchParams(location.search);
+
   /* 물건 상세 페이지에서 넘어온 경우 어떤 물건인지 채워 둔다. */
-  var item = new URLSearchParams(location.search).get('item');
+  var item = params.get('item');
   if (item) {
     var wrap = form.querySelector('[data-item-wrap]');
     var input = form.querySelector('#f-item');
     if (wrap && input) { input.value = item; wrap.hidden = false; }
+  }
+
+  /* 과정 페이지에서 넘어온 경우 어떤 과정인지 함께 담는다.
+     이걸 안 담으면 상담 전화를 걸 때 무엇을 보고 왔는지 알 수 없다. */
+  var course = params.get('course');
+  if (course) {
+    var cWrap = form.querySelector('[data-course-wrap]');
+    var cInput = form.querySelector('#f-course');
+    if (cWrap && cInput) { cInput.value = course; cWrap.hidden = false; }
+
+    var interest = document.getElementById('f-interest');
+    if (interest) {
+      for (var i = 0; i < interest.options.length; i += 1) {
+        if (/수강/.test(interest.options[i].value)) { interest.selectedIndex = i; break; }
+      }
+    }
   }
 
   function setError(id, message) {
@@ -98,6 +116,13 @@
     var data = {};
     new FormData(form).forEach(function (v, k) { data[k] = v; });
     data['신청시각'] = new Date().toLocaleString('ko-KR');
+
+    /* 과정 페이지에서 왔다면 그 과정을 관심분야에 붙여 보낸다.
+       접수 시트에 '과정' 열이 따로 없어서, 열을 추가하지 않고도
+       어떤 과정을 보고 신청했는지 남기기 위해서다. */
+    if (data['과정']) {
+      data['관심분야'] = (data['관심분야'] || '') + ' — ' + data['과정'];
+    }
 
     submitBtn.disabled = true;
     statusEl.className = 'apply-status';

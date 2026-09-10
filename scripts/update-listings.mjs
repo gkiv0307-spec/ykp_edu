@@ -562,7 +562,7 @@ async function main() {
   const pages = await buildListingPages(ROOT, listings);
   log(`· 물건 상세 페이지 ${pages.length}장 생성`);
 
-  await buildSitemap(ROOT, pages);
+  await buildSitemap(ROOT);
   log('· sitemap.xml 갱신');
 
   /* 더 이상 쓰이지 않는 자동 이미지 정리 */

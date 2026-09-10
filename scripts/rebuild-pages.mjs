@@ -25,5 +25,5 @@ const listings = JSON.parse(raw).map((l) => ({
 const pages = await buildListingPages(ROOT, listings);
 console.log(`· 물건 상세 페이지 ${pages.length}장 생성`);
 
-const n = await buildSitemap(ROOT, pages);
+const n = await buildSitemap(ROOT);
 console.log(`· sitemap.xml 갱신 (${n}개 주소)`);
