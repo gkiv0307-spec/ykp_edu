@@ -512,6 +512,21 @@ async function main() {
     listings.push(l);
   }
 
+  /* 같은 사건번호를 블로그에 여러 번 올리면 물건이 중복으로 보인다.
+     RSS 는 최신 글이 앞에 오므로, 먼저 만난 글 하나만 남긴다. */
+  {
+    const seen = new Set();
+    const kept = [];
+    for (const l of listings) {
+      const key = l.caseNo || `${l.name}|${l.minBid}`;
+      if (seen.has(key)) { log(`  - 중복 물건 건너뜀: ${key}`); continue; }
+      seen.add(key);
+      kept.push(l);
+    }
+    listings.length = 0;
+    listings.push(...kept);
+  }
+
   const today = todayKST();
   const active = listings.filter((l) => !l.saleDate || l.saleDate >= today);
   const sold = listings.filter((l) => l.saleDate && l.saleDate < today);

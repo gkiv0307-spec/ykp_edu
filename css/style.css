@@ -594,6 +594,18 @@ a {
   font-weight: 700;
   display: block;
 }
+/* 실적 수치 옆 집계기준 — 무엇을 센 숫자인지 밝히지 않으면 과장 광고로 읽힌다. */
+.hero-proof-note {
+  color: #9a938b;
+  max-width: 680px;
+  margin-top: 18px;
+  font-size: 12px;
+  line-height: 1.75;
+}
+.hero-proof-note b {
+  color: #c3bbb1;
+  font-weight: 700;
+}
 @keyframes proofReveal {
   to {
     opacity: 1;

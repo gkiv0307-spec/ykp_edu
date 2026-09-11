@@ -32,7 +32,9 @@
         const el = entry.target;
         countObserver.unobserve(el);
         const target = parseInt(el.dataset.target, 10);
-        const suffix = el.textContent.replace(/^0+/, '');
+        /* 숫자는 HTML에 실제 값으로 박혀 있다(검색엔진·JS 미실행 대비).
+           접미사는 data-suffix 에서 읽어 애니메이션 중에도 유지한다. */
+        const suffix = el.dataset.suffix ?? '';
         const duration = 1200;
         const start = performance.now();
         el.classList.add('is-counting');
