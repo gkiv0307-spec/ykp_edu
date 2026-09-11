@@ -2690,6 +2690,61 @@ a {
   font-weight: 900;
   display: inline-flex;
 }
+/* 교육·낙찰코칭·컨설팅·입찰대행의 경계를 먼저 밝히는 블록.
+   이해상충 의심은 가격보다 앞서 등록을 막는다. */
+.service-split {
+  border: 1px solid #2d201214;
+  border-radius: 14px;
+  margin: 26px 0 18px;
+  padding: 26px 28px;
+  background: #fbf8f4;
+}
+.service-split h3 {
+  letter-spacing: -0.03em;
+  margin: 0 0 8px;
+  font-size: 20px;
+}
+.service-split > p {
+  color: #5f574e;
+  max-width: 720px;
+  margin: 0 0 18px;
+  font-size: 14px;
+  line-height: 1.75;
+}
+.service-split dl {
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 10px;
+  margin: 0 0 16px;
+  display: grid;
+}
+.service-split dl div {
+  border: 1px solid #2d20120f;
+  border-radius: 10px;
+  padding: 14px 16px;
+  background: #fff;
+}
+.service-split dt {
+  color: var(--course-accent, #8a6b3d);
+  margin-bottom: 5px;
+  font-size: 13px;
+  font-weight: 800;
+}
+.service-split dd {
+  color: #5f574e;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.65;
+}
+.service-split ul {
+  margin: 0;
+  padding-left: 18px;
+}
+.service-split li {
+  color: #4a433b;
+  margin-bottom: 6px;
+  font-size: 13px;
+  line-height: 1.7;
+}
 .vat-note {
   color: #837b71;
   margin: 16px 0 0;
