@@ -13,6 +13,7 @@ import { loadShell, renderPage } from './lib/shell.mjs';
 import { readCourses } from './lib/courses.mjs';
 import { buildCoursePages } from './build-course-pages.mjs';
 import { buildSitemap } from './build-sitemap.mjs';
+import { buildPolicyPage } from './build-policy-page.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SITE = 'https://xn--289av8kwmfs4dv2e.store';
@@ -126,8 +127,11 @@ function applyPage(shell, courses) {
 
     + '<label class="apply-agree">'
     + '<input type="checkbox" id="f-agree" name="개인정보동의" required/>'
-    + '<span>상담 연락을 위한 <strong>이름·연락처 수집</strong>에 동의합니다. '
-    + '상담 목적 외에는 사용하지 않으며, 요청하시면 즉시 삭제합니다.</span>'
+    + '<span>상담 연락을 위해 <strong>이름·연락처</strong>(필수)와 '
+    + '<strong>관심분야·경매 경험·문의 내용</strong>(선택)을 수집합니다. '
+    + '상담과 문의 답변 외에는 쓰지 않고, 삭제를 요청하시면 즉시 파기합니다. '
+    + '저장은 Google 스프레드시트에 위탁합니다. '
+    + '자세한 내용은 <a href="/policy.html#privacy">개인정보 수집·이용 안내</a>를 봐 주세요.</span>'
     + '</label>'
     + '<p class="apply-error" data-for="f-agree"></p>'
 
@@ -176,5 +180,8 @@ console.log(`· apply.html 생성 (수강료 ${courses.length}개 과정 반영)
 
 const { pages: coursePages } = await buildCoursePages(ROOT);
 console.log(`· 과정 페이지 ${coursePages.length}장 생성`);
+
+const missing = await buildPolicyPage(ROOT, shell);
+console.log(`· policy.html 생성${missing.length ? ` — 아직 못 채운 항목: ${missing.join(', ')}` : ''}`);
 
 console.log(`· sitemap.xml 갱신 (${await buildSitemap(ROOT)}개 주소)`);
