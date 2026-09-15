@@ -14,6 +14,7 @@ import { readCourses } from './lib/courses.mjs';
 import { buildCoursePages } from './build-course-pages.mjs';
 import { buildSitemap } from './build-sitemap.mjs';
 import { buildPolicyPage } from './build-policy-page.mjs';
+import { updateSchedule } from './update-schedule.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SITE = 'https://xn--289av8kwmfs4dv2e.store';
@@ -66,6 +67,48 @@ function priceTable(courses) {
       + '</tr>').join('')
     + '</tbody></table></div>'
     + '<a class="button button-line price-more" href="/#courses">과정별 상세 내용 보기 <span>→</span></a>'
+    + '</section>';
+}
+
+/**
+ * 과정별 차이 비교표.
+ *
+ * 값은 index.html 의 course-support 에서 그대로 읽는다. 표에 내용을 또
+ * 적어두면 카드와 표가 반드시 어긋나기 때문이다. 네 과정이 같은 항목을
+ * 같은 순서로 적고 있을 때만 표를 만들고, 어긋나면 아예 만들지 않는다.
+ */
+function comparisonTable(courses) {
+  /* 컨설팅은 교육이 아니라 실행 지원이라 같은 축에 올리지 않는다 */
+  const cols = courses.filter((c) => c.support.length && c.slug !== 'consulting');
+  if (cols.length < 2) return '';
+
+  const rows = cols[0].support.map((s) => s.label);
+  const aligned = rows.every((label, i) => cols.every((c) => c.support[i]?.label === label));
+  if (!aligned) return '';
+
+  const priceOf = (c) => (c.optionPrices.length
+    ? c.optionPrices.map((o) => `${esc(o.label)} ${esc(o.price)}`).join('<br/>')
+    : esc(c.price || '-'));
+
+  return '<section class="price-table compare-table" id="compare">'
+    + '<h2>과정별로 무엇이 다른가요</h2>'
+    + '<p class="price-lead">같은 항목을 네 과정이 각각 어떻게 주는지 나란히 놓았습니다. '
+    + '맞춤 경매 컨설팅은 교육이 아니라 실행을 지원하는 서비스여서 이 표에서 뺐습니다.</p>'
+    + '<div class="price-scroll"><table>'
+    + '<thead><tr><th scope="col">항목</th>'
+    + cols.map((c) => `<th scope="col"><a href="/courses/${esc(c.slug)}.html">${esc(c.name)}</a></th>`).join('')
+    + '</tr></thead><tbody>'
+    /* 모바일에서는 표가 세로로 풀리고 data-label 이 셀 앞에 붙는다.
+       그때 필요한 이름은 항목이 아니라 어느 과정인지다. */
+    + '<tr><th scope="row">수강료</th>'
+    + cols.map((c) => `<td data-label="${esc(c.name)}">${priceOf(c)}</td>`).join('')
+    + '</tr>'
+    + rows.map((label, i) => `<tr><th scope="row">${esc(label)}</th>`
+      + cols.map((c) => `<td data-label="${esc(c.name)}">${esc(c.support[i].value)}</td>`).join('')
+      + '</tr>').join('')
+    + '</tbody></table></div>'
+    + '<p class="price-lead compare-note">첫 낙찰 실행코칭에서 ‘계약 전 서면 안내’로 적힌 항목은 '
+    + '횟수와 조건을 계약서로 먼저 보여드립니다. 낙찰과 투자수익은 보장하지 않습니다.</p>'
     + '</section>';
 }
 
@@ -147,6 +190,7 @@ function applyPage(shell, courses) {
     + '</div>'
     + '</section>'
     + priceTable(courses)
+    + comparisonTable(courses)
     + '</article>';
 
   return renderPage({
@@ -172,6 +216,12 @@ function applyPage(shell, courses) {
     content,
   });
 }
+
+/* 개강 안내를 먼저 넣는다. 하위 페이지가 index.html 을 읽어 가기 때문이다. */
+const sch = await updateSchedule(ROOT);
+console.log(sch.ok
+  ? `· 개강 안내 ${sch.shown ? '표시' : `숨김 — ${sch.why}`}`
+  : `· 개강 안내 건너뜀 — ${sch.why}`);
 
 const shell = await loadShell(ROOT);
 const courses = await readCourses(ROOT);
