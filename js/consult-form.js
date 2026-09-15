@@ -20,6 +20,8 @@
   var submitBtn = form.querySelector('.apply-submit');
 
   var params = new URLSearchParams(location.search);
+  var dateInput = document.getElementById('f-date');
+  if (dateInput) dateInput.min = new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Seoul'});
 
   /* 물건 상세 페이지에서 넘어온 경우 어떤 물건인지 채워 둔다. */
   var item = params.get('item');
@@ -113,9 +115,18 @@
       return;
     }
 
+    if (dateInput && dateInput.value && dateInput.value < dateInput.min) {
+      statusEl.textContent = '희망 상담일은 오늘 이후 날짜를 선택해 주세요.';
+      dateInput.focus();
+      return;
+    }
     var data = {};
     new FormData(form).forEach(function (v, k) { data[k] = v; });
-    data['신청시각'] = new Date().toLocaleString('ko-KR');
+    data['신청시각'] = new Date().toLocaleString('ko-KR', {timeZone:'Asia/Seoul'});
+    var details = [];
+    if (data['희망상담일'] || data['희망상담시간']) details.push('희망 상담: ' + (data['희망상담일'] || '날짜 미정') + ' ' + (data['희망상담시간'] || '시간 미정'));
+    details.push('접수경로: 홈페이지 / 개인정보 수집·이용 동의: 확인');
+    if (details.length) data['문의내용'] = (data['문의내용'] || '') + '\n\n' + details.join('\n');
 
     /* 과정 페이지에서 왔다면 그 과정을 관심분야에 붙여 보낸다.
        접수 시트에 '과정' 열이 따로 없어서, 열을 추가하지 않고도
@@ -145,18 +156,19 @@
       body: JSON.stringify(data),
       signal: controller ? controller.signal : undefined,
     })
-      /* 응답 코드를 성공 판정에 쓰지 않는다. 일부러 그렇게 두었다.
-         Apps Script 는 doPost 를 다 실행한 뒤에야 결과 페이지로 넘겨주는데,
-         그 결과 페이지가 이따금 404 로 온다. 그때도 시트에는 이미 기록된
-         상태라, 404 를 실패로 처리하면 접수됐는데도 실패라고 안내해
-         고객이 다시 신청하게 된다(중복 접수).
-         응답이 왔다 = 서버가 처리를 마쳤다 로 보고, 아예 도달하지 못한
-         경우(fetch 자체가 실패)만 아래 catch 에서 실패로 처리한다. */
-      .then(function () {
+      .then(function (response) {
+        if (!response.ok) throw new Error('unconfirmed');
+        return response.json();
+      })
+      .then(function (result) {
         clearTimeout(timer);
         lockForm();
+        if (!result || result.ok !== true) {
+          fallbackToKakao('접수 완료를 확인하지 못했습니다. 중복 신청 전에 연락처로 확인해 주세요.');
+          return;
+        }
         statusEl.className = 'apply-status is-ok';
-        statusEl.textContent = '신청이 접수되었습니다. 영업일 기준 1일 안에 연락드리겠습니다.';
+        statusEl.textContent = '신청이 접수되었습니다. 희망 일시와 상담 가능 시간을 확인해 연락드리겠습니다.';
       })
       .catch(function () {
         clearTimeout(timer);
@@ -164,13 +176,13 @@
           /* 요청은 갔는데 응답만 못 받은 상황. 다시 보내라고 하면 중복이 된다. */
           lockForm();
           statusEl.className = 'apply-status is-warn';
-          statusEl.innerHTML = '접수 확인이 늦어지고 있습니다. 신청은 접수되었을 가능성이 큽니다.'
+          statusEl.innerHTML = '접수 확인이 늦어지고 있습니다. 중복 신청 전에 접수 여부를 확인해 주세요.'
             + ' 확인이 필요하시면 <a href="https://open.kakao.com/o/s91CvTFf" target="_blank" rel="noreferrer">카카오톡 ↗</a>'
             + ' 또는 <a href="tel:0532810759">053-281-0759</a> 로 문의해 주세요.';
           return;
         }
-        submitBtn.disabled = false;
-        fallbackToKakao('전송에 실패했습니다.');
+        lockForm();
+        fallbackToKakao('접수 완료를 확인하지 못했습니다. 중복 신청 전에 연락처로 확인해 주세요.');
       });
   });
 })();

@@ -1,3 +1,6 @@
+// A passed date is not evidence of a successful auction. Use the shared listing renderer.
+console.log('날짜 기반 낙찰 판정 중지: update-listings.mjs 사용');
+process.exit(0);
 // Fetches the 매각기일 (auction sale date) mentioned in each linked blog post
 // for every card in .property-feed-grid, then marks the card as an upcoming
 // D-day countdown or as sold out ("낙찰완료") if that date has passed.

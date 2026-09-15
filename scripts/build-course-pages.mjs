@@ -105,6 +105,7 @@ function pageFor(c, all, shell) {
         + '</dl></section>'
       : '')
 
+    + '<section class="cp-support"><h2>등록 전 확인해 주세요</h2><p>잔여석·수업 시작 시각과 환불·연기·결석·영상복습·질문지원 조건은 결제 전에 확인해 주세요. 교육과 컨설팅은 별도 서비스이며, 낙찰과 투자수익을 보장하지 않습니다.</p></section>'
     + '<section class="cp-cta">'
     + `<h2>${esc(c.name)}, 나에게 맞을까요?</h2>`
     + '<p>경매 경험과 목표를 들어보고 맞는 단계를 알려드립니다. '
@@ -146,6 +147,7 @@ function pageFor(c, all, shell) {
       hasCourseInstance: {
         '@type': 'CourseInstance',
         courseMode: /온라인/.test(c.method) ? 'online' : 'onsite',
+        ...(c.slug === 'beginner' ? {startDate: '2026-10-12'} : c.slug === 'intermediate' ? {startDate: '2026-10-13'} : {}),
         location: {
           '@type': 'Place',
           name: '옆커폰부동산에듀',

@@ -62,7 +62,8 @@ function summaryRows(l) {
     ['물건 종류', l.kind],
     ['전용면적', l.area ? `${l.area}㎡ (약 ${(l.area * 0.3025).toFixed(1)}평)` : null],
     ['감정가', won(l.appraisal)],
-    ['최저매각가격', won(l.minBid)],
+    ['블로그 기재 최저매각가격', won(l.minBid)],
+    ['자료 확인', '블로그 공개자료 기준 · 최신 기일과 결과는 법원 원문 확인'],
     ['감정가 대비', l.appraisal && l.minBid ? `${Math.round((l.minBid / l.appraisal) * 100)}%` : null],
     ['매각기일', l.saleDate ? new Date(l.saleDate).toLocaleDateString('ko-KR') : null],
     ['담당 법원', l.court],
@@ -144,21 +145,10 @@ function pageFor(l, all, shell) {
 
   const jsonLd = [{
     '@context': 'https://schema.org',
-    '@type': 'Product',
-    name: `${place} ${l.name} ${l.kind} 경매`,
-    image: [image],
-    description,
-    sku: l.caseNo || l.id,
-    ...(l.minBid ? {
-      offers: {
-        '@type': 'Offer',
-        price: l.minBid,
-        priceCurrency: 'KRW',
-        availability: l.sold
-          ? 'https://schema.org/SoldOut' : 'https://schema.org/InStock',
-        url: canonical,
-      },
-    } : {}),
+    '@type': 'Article',
+    headline: `${place} ${l.name} ${l.kind} 경매 자료`,
+    image: [image], description, url: canonical,
+    publisher: {'@type':'Organization', name:'옆커폰부동산에듀'},
   }];
 
   return renderPage({

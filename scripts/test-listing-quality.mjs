@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {normalizeListings} from './lib/listing-quality.mjs';
+const sample={court:'대구지방법원',caseNo:'2025타경1',appraisal:350000000,minBid:245000000,description:'테스트 106동 8층 803호'};
+const input=[{...sample,id:'1',sold:true,saleDate:'2020-01-01'},{...sample,id:'2',saleDate:'2026-10-01'},{...sample,id:'3',description:'106동 804호'}];
+const rows=normalizeListings(input);
+assert.equal(rows.length,2,'same court/case/unit must deduplicate');
+assert(rows.some(x=>x.id==='2'),'newest post must win');
+assert(rows.every(x=>!x.sold),'past date and legacy sold flag do not prove a sale');
+assert.equal(normalizeListings([{...sample,id:'4',minBid:1782800000}])[0].minBid,null,'abnormal minimum must not be published');
+assert.equal(normalizeListings([{...sample,id:'5',status:'sold',statusVerified:true}])[0].sold,true);
+assert.equal(normalizeListings([{...sample,id:'6',description:''},{...sample,id:'7',description:''}]).length,2,'do not merge different lots without unit evidence');
+assert.equal(normalizeListings([{...sample,id:'8',court:'서울중앙지방법원'},{...sample,id:'9'}]).length,2);
+console.log('PASS: duplicate units, distinct lots/courts, latest post, sale evidence, abnormal price');

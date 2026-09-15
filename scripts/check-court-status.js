@@ -1,3 +1,6 @@
+// Temporarily read-only until court + case + lot mapping and shared data updates are verified.
+console.log('법원 자동 덮어쓰기 중지: 물건번호별 결과 검증 후 재개');
+process.exit(0);
 // Re-checks every tracked property card against the official court auction
 // site (courtauction.go.kr) and updates its D-day badge / sold status / price
 // to match. Cards without a data-court attribute (case number not verified)

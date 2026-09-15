@@ -13,6 +13,7 @@ import { loadShell, renderPage } from './lib/shell.mjs';
 import { readCourses } from './lib/courses.mjs';
 import { buildCoursePages } from './build-course-pages.mjs';
 import { buildSitemap } from './build-sitemap.mjs';
+import { buildResources } from './build-resources.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SITE = 'https://xn--289av8kwmfs4dv2e.store';
@@ -124,10 +125,12 @@ function applyPage(shell, courses) {
     + 'placeholder="예) 수성구 쪽 3억 이하 아파트를 보고 있습니다. 대출이 얼마나 나올지 궁금합니다."></textarea>'
     + '</div>'
 
+    + '<div class="apply-row"><div class="apply-field"><label for="f-date">희망 상담일 (선택)</label><input id="f-date" name="희망상담일" type="date"/></div><div class="apply-field"><label for="f-time">희망 상담시간 (선택)</label><input id="f-time" name="희망상담시간" type="time"/></div></div>'
+    + '<p class="apply-lead">희망 일시를 남겨주시면 가능한 시간을 확인해 연락드립니다. 신청만으로 상담 예약이나 수강 좌석이 확정되지는 않습니다.</p>'
     + '<label class="apply-agree">'
     + '<input type="checkbox" id="f-agree" name="개인정보동의" required/>'
-    + '<span>상담 연락을 위한 <strong>이름·연락처 수집</strong>에 동의합니다. '
-    + '상담 목적 외에는 사용하지 않으며, 요청하시면 즉시 삭제합니다.</span>'
+    + '<span>상담 연락을 위한 <strong>이름·연락처(필수)</strong>와 직접 입력한 관심분야·경매경험·문의내용·관심물건·과정·희망일시(선택)의 수집·이용에 동의합니다. '
+    + '상담 및 수강 안내 목적으로 사용하며, 삭제 요청은 053-281-0759로 접수합니다. 동의를 거부할 수 있으며 거부 시 이 폼의 접수는 어렵습니다.</span>'
     + '</label>'
     + '<p class="apply-error" data-for="f-agree"></p>'
 
@@ -153,7 +156,7 @@ function applyPage(shell, courses) {
     canonical: `${SITE}/apply.html`,
     image: `${SITE}/assets/ykphone-logo-horizontal.png`,
     bodyClass: 'page-apply',
-    scripts: ['/js/consult-form.js'],
+    scripts: ['/js/consult-form.js?v=20260915'],
     jsonLd: [{
       '@context': 'https://schema.org',
       '@type': 'ContactPage',
@@ -177,4 +180,5 @@ console.log(`· apply.html 생성 (수강료 ${courses.length}개 과정 반영)
 const { pages: coursePages } = await buildCoursePages(ROOT);
 console.log(`· 과정 페이지 ${coursePages.length}장 생성`);
 
+await buildResources(ROOT, shell);
 console.log(`· sitemap.xml 갱신 (${await buildSitemap(ROOT)}개 주소)`);

@@ -78,13 +78,13 @@ export function renderPage({
     + `<meta name="twitter:title" content="${esc(title)}"/>`
     + `<meta name="twitter:description" content="${esc(description)}"/>`
     + `<meta name="twitter:image" content="${esc(image)}"/>`
-    + '<link rel="stylesheet" href="/css/style.css"/>'
+    + '<link rel="stylesheet" href="/css/style.css?v=20260915"/>'
     + ld.map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join('')
     + `</head><body class="${bodyClass}"><main>`
     + shell.header + shell.mobileNav
     + content
     + shell.footer + shell.floating
-    + '</main><script src="/js/main.js" defer></script>'
+    + '</main><script src="/js/main.js?v=20260915" defer></script>'
     + scripts.map((s) => `<script src="${esc(s)}" defer></script>`).join('')
     + '</body></html>';
 }

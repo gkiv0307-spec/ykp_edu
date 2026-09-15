@@ -23,32 +23,7 @@
     mobileMenu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setMenuOpen(false)));
   }
 
-  /* Count-up stats */
-  const countEls = document.querySelectorAll('.count-up[data-target]');
-  const countObserver = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        const el = entry.target;
-        countObserver.unobserve(el);
-        const target = parseInt(el.dataset.target, 10);
-        const suffix = el.textContent.replace(/^0+/, '');
-        const duration = 1200;
-        const start = performance.now();
-        el.classList.add('is-counting');
-        function tick(now) {
-          const progress = Math.min(1, (now - start) / duration);
-          const eased = 1 - Math.pow(1 - progress, 3);
-          const value = Math.round(target * eased);
-          el.textContent = value + suffix;
-          if (progress < 1) requestAnimationFrame(tick);
-        }
-        requestAnimationFrame(tick);
-      });
-    },
-    { threshold: 0.6 }
-  );
-  countEls.forEach((el) => countObserver.observe(el));
+  /* Figures are rendered in HTML so crawlers and readers see the same values. */
 
   /* Region filter */
   const filterBar = document.querySelector('.filter-bar');
@@ -324,35 +299,35 @@
   const RESULTS = {
     beginner: {
       badge: 'RECOMMENDED',
-      title: '초급반',
+      title: '첫 입찰 준비반',
       tagline: '경매가 처음이라면 여기서 시작하세요.',
       desc: '용어와 절차, 권리분석 기초부터 모의입찰까지 5주 동안 기본기를 완성합니다.',
       href: '/courses/beginner.html',
-      cta: '초급반 자세히 보기',
+      cta: '첫 입찰 준비반 자세히 보기',
     },
     intermediate: {
       badge: 'RECOMMENDED',
-      title: '중급반',
+      title: '권리·수익분석 실전반',
       tagline: '기초는 아는데 수익 계산이 막막하다면.',
       desc: '배당표 분석, 세금, 특수물건까지 다루며 실전 투자 전략을 익히는 과정입니다.',
       href: '/courses/intermediate.html',
-      cta: '중급반 자세히 보기',
+      cta: '권리·수익분석 실전반 자세히 보기',
     },
     coaching: {
       badge: 'RECOMMENDED',
-      title: '낙찰반',
+      title: '첫 낙찰 실행코칭',
       tagline: '입찰 경험이 있고 실제 낙찰이 목표라면.',
-      desc: '대표 추천 물건과 본인 물건 분석, 물건 브리핑과 개별 상담으로 낙찰 성공률을 높입니다.',
+      desc: '투자기준에 맞는 물건을 검토하고, 고객이 직접 입찰을 준비하도록 개별 피드백을 제공합니다.',
       href: '/courses/coaching.html',
-      cta: '낙찰반 자세히 보기',
+      cta: '첫 낙찰 실행코칭 자세히 보기',
     },
     consulting: {
       badge: 'RECOMMENDED',
-      title: '1:1 컨설팅',
+      title: '맞춤 경매 컨설팅',
       tagline: '시간이 부족하다면 대표와 1:1로.',
       desc: '물건 선정부터 권리분석, 입찰가 산정, 낙찰 후 관리까지 맞춤으로 진행합니다.',
       href: '/courses/consulting.html',
-      cta: '1:1 컨설팅 알아보기',
+      cta: '맞춤 경매 컨설팅 알아보기',
     },
   };
 

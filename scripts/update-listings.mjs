@@ -12,7 +12,7 @@ import { readFile, writeFile, mkdir, readdir, unlink } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import sharp from 'sharp';
+import { normalizeListings } from './lib/listing-quality.mjs';
 import { buildListingPages, slugOf } from './build-listing-pages.mjs';
 import { buildSitemap } from './build-sitemap.mjs';
 
@@ -366,7 +366,7 @@ async function downloadImage(listing) {
     const res = await fetch(listing.ogImage, { headers: { 'User-Agent': UA_MOBILE } });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const buf = Buffer.from(await res.arrayBuffer());
-    await sharp(buf)
+    await (await import('sharp')).default(buf)
       .resize({ width: 720, height: 540, fit: 'cover', position: 'top' })
       .webp({ quality: 78 })
       .toFile(out);
@@ -384,7 +384,7 @@ function renderCard(l, i, sold) {
   const accent = `accent-${(i % 3) + 1}`;
   const region = l.sido || '기타';
   const place = [l.sido, l.sigungu].filter(Boolean).join(' · ') || '전국';
-  const price = formatKoreanMoney(l.minBid) || formatKoreanMoney(l.appraisal) || '가격 문의';
+  const price = l.minBid ? `최저가 ${formatKoreanMoney(l.minBid)}` : '최저가 확인 필요';
   const img = l.image || 'assets/ykphone-logo-mark.png';
 
   const ratio = l.appraisal && l.minBid ? Math.round((l.minBid / l.appraisal) * 100) : null;
@@ -394,12 +394,12 @@ function renderCard(l, i, sold) {
 
   let badgeRight;
   if (sold) {
-    badgeRight = '<time class="badge-sold">낙찰완료</time>';
+    badgeRight = '<time class="badge-sold">낙찰 확인</time>';
   } else if (l.saleDate) {
     const days = Math.round((l.saleDate - todayKST()) / 86400000);
-    badgeRight = `<time class="badge-dday" datetime="${l.saleDate.toISOString().slice(0, 10)}">${days === 0 ? 'D-DAY' : `D-${days}`}</time>`;
+    badgeRight = `<time class="badge-dday" datetime="${l.saleDate.toISOString().slice(0, 10)}">${days < 0 ? '기일 경과 · 결과 확인' : days === 0 ? 'D-DAY' : `D-${days}`}</time>`;
   } else {
-    badgeRight = `<time>${l.pubLabel}</time>`;
+    badgeRight = '<time>기일 확인 필요</time>';
   }
 
   const ctaBits = [l.caseNo, l.appraisal ? `감정가 ${formatKoreanMoney(l.appraisal)}` : null]
@@ -446,7 +446,7 @@ function renderFilterBar(listings) {
 
 function renderStatusTabs(activeCount, soldCount) {
   return '<div class="status-tabs" role="tablist" aria-label="매물 상태">' +
-    `<button type="button" role="tab" aria-selected="true" class="active" data-status-tab="active"><span>01</span> 진행중인 물건 <b>${activeCount}</b></button>` +
+    `<button type="button" role="tab" aria-selected="true" class="active" data-status-tab="active"><span>01</span> 물건 정보 <b>${activeCount}</b></button>` +
     `<button type="button" role="tab" aria-selected="false" data-status-tab="sold"><span>02</span> 낙찰완료 <b>${soldCount}</b></button>` +
     '</div>';
 }
@@ -477,7 +477,7 @@ function patchIndex(html, { filterBar, statusTabs, grids, updatedLabel }) {
 
   out = out.replace(
     /<div class="sample-notice">[\s\S]*?<\/div>/,
-    `<div class="sample-notice"><strong>블로그 연동</strong>블로그에 올라온 최신 물건을 매일 자동으로 가져옵니다. 카드를 누르면 물건 상세정보를 볼 수 있습니다. <em class="feed-updated">${updatedLabel} 기준</em></div>`,
+    `<div class="sample-notice"><strong>블로그 연동</strong>블로그에 올라온 최신 물건을 블로그 기준으로 가져옵니다. 기일 경과는 낙찰을 의미하지 않습니다. 카드를 누르면 물건 상세정보를 볼 수 있습니다. <em class="feed-updated">${updatedLabel} 기준</em></div>`,
   );
 
   const start = out.indexOf('<div class="property-feed-grid"');
@@ -502,7 +502,7 @@ async function main() {
   });
   log(`  물건 글 후보 ${candidates.length}건`);
 
-  const listings = [];
+  let listings = [];
   for (const [i, it] of candidates.entries()) {
     log(`· (${i + 1}/${candidates.length}) ${it.title.slice(0, 40)}`);
     const l = await buildListing(it);
@@ -512,16 +512,18 @@ async function main() {
     listings.push(l);
   }
 
+  listings = normalizeListings(listings);
   const today = todayKST();
-  const active = listings.filter((l) => !l.saleDate || l.saleDate >= today);
-  const sold = listings.filter((l) => l.saleDate && l.saleDate < today);
+  const active = listings.filter((l) => !l.sold);
+  const sold = listings.filter((l) => l.sold);
 
   /* 상세 페이지에서도 낙찰 여부를 알아야 한다 */
   active.forEach((l) => { l.sold = false; });
   sold.forEach((l) => { l.sold = true; });
 
   /* 진행중은 매각기일 가까운 순, 낙찰완료는 최근 기일 순 */
-  active.sort((a, b) => (a.saleDate?.getTime() ?? Infinity) - (b.saleDate?.getTime() ?? Infinity));
+  const dateOrder = (l) => l.saleDate && l.saleDate >= today ? l.saleDate.getTime() : Number.MAX_SAFE_INTEGER;
+  active.sort((a, b) => dateOrder(a) - dateOrder(b));
   sold.sort((a, b) => (b.saleDate?.getTime() ?? 0) - (a.saleDate?.getTime() ?? 0));
 
   log(`\n· 진행중 ${active.length}건 / 낙찰완료 ${sold.length}건`);
@@ -572,5 +574,9 @@ async function main() {
   }
 }
 
-await mkdir(IMAGE_DIR, { recursive: true });
-await main();
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  await mkdir(IMAGE_DIR, { recursive: true });
+  await main();
+}
+
+export { renderFilterBar, renderStatusTabs, renderGrids, patchIndex };

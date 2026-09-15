@@ -16,6 +16,7 @@ const SITE = 'https://xn--289av8kwmfs4dv2e.store';
 const STATIC_PAGES = [
   { loc: '/', changefreq: 'daily', priority: '1.0' },
   { loc: '/apply.html', changefreq: 'monthly', priority: '0.9' },
+  { loc: '/checklist.html', changefreq: 'monthly', priority: '0.7' },
 ];
 
 /* 훑어서 넣을 폴더들 */
