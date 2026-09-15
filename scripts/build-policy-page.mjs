@@ -33,7 +33,7 @@ const para = (label, text) => (text
 function policyPage(shell, p) {
   const r = p.환불;
   const refund = r ? table(['수강을 그만두는 시점', '돌려드리는 금액'], r.단계)
-    + `<p class="policy-note">기준: ${esc(r.근거)}</p>`
+    + (r.근거 ? `<p class="policy-note">기준: ${esc(r.근거)}</p>` : '')
     + (r.비고 ? `<p class="policy-note">${esc(r.비고)}</p>` : '') : '';
 
   const qna = p.질문지원 ? table(['과정', '질문에 답해 드리는 기간'], p.질문지원) : '';
