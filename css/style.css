@@ -5816,8 +5816,8 @@ footer {
   .floating-consult {
     grid-template-columns: 1fr;
   }
-  .floating-consult-kakao,
-  .floating-consult-phone {
+  .floating-consult a.floating-consult-kakao,
+  .floating-consult a.floating-consult-phone {
     display: none;
   }
   .floating-consult a + a {
@@ -5827,7 +5827,7 @@ footer {
   .page-apply .floating-consult-apply {
     display: none;
   }
-  .page-apply .floating-consult-kakao {
+  .page-apply .floating-consult a.floating-consult-kakao {
     display: flex;
   }
 }
@@ -6626,7 +6626,7 @@ footer {
 }
 /* 비교표는 열이 다섯이라 기본 표보다 넓게 잡아야 겹치지 않는다 */
 .compare-table table {
-  min-width: 760px;
+  min-width: 700px;
 }
 .compare-note {
   margin-top: 12px;
@@ -6703,5 +6703,53 @@ footer {
   }
   .schedule-cta {
     flex: 1 1 100%;
+  }
+}
+
+/* 계약 전에 물어볼 항목. 체크표시를 쓰면 이미 제공되는 것처럼 읽힌다. */
+.course-content.course-ask li:before {
+  content: "?";
+  color: var(--muted);
+}
+.cp-checklist ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cp-checklist li {
+  border-bottom: 1px solid var(--line);
+  padding: 11px 0 11px 26px;
+  font-size: 15px;
+  line-height: 1.6;
+  position: relative;
+}
+.cp-checklist li:before {
+  content: "?";
+  color: var(--muted);
+  font-weight: 900;
+  position: absolute;
+  left: 4px;
+}
+
+@media (max-width: 680px) {
+  /* 비교표의 셀 라벨은 과정 이름이다. 74px 짜리 라벨 칸에 밀어넣으면
+     "권리·수익분" / "석 실전반" 처럼 끊긴다. 이름을 윗줄로 올린다. */
+  .compare-table td {
+    flex-direction: column;
+    gap: 2px;
+  }
+  .compare-table td:before {
+    width: auto;
+  }
+}
+
+/* 비교표는 열이 다섯이라 760px 본문 폭에 넣으면 마지막 과정이 잘린다.
+   비교하려고 만든 표인데 한 과정이 안 보이면 소용이 없다.
+   화면이 넉넉할 때만 본문 밖으로 펴서 네 과정을 한눈에 둔다. */
+@media (min-width: 1000px) {
+  .compare-table {
+    width: min(1080px, calc(100vw - 48px));
+    margin-left: 50%;
+    transform: translateX(-50%);
   }
 }

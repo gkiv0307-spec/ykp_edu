@@ -87,10 +87,15 @@ function pageFor(c, all, shell) {
         + '</ul></section>'
       : '')
 
+    /* 확인할 질문 목록을 번호 매긴 커리큘럼으로 내보내면 "이걸 가르칩니다"로 읽힌다 */
     + (c.curriculum.length
-      ? `<section class="cp-curriculum"><h2>${esc(c.contentHeading)}</h2><ol>`
-        + c.curriculum.map((v) => `<li>${esc(v)}</li>`).join('')
-        + '</ol></section>'
+      ? (c.askList
+        ? `<section class="cp-checklist"><h2>${esc(c.contentHeading)}</h2><ul>`
+          + c.curriculum.map((v) => `<li>${esc(v)}</li>`).join('')
+          + '</ul></section>'
+        : `<section class="cp-curriculum"><h2>${esc(c.contentHeading)}</h2><ol>`
+          + c.curriculum.map((v) => `<li>${esc(v)}</li>`).join('')
+          + '</ol></section>')
       : '')
 
     + (c.support.length
@@ -142,7 +147,8 @@ function pageFor(c, all, shell) {
         name: '옆커폰부동산에듀',
         url: `${SITE}/`,
       },
-      ...(c.curriculum.length ? { teaches: c.curriculum } : {}),
+      /* 계약 전 확인 목록은 가르치는 내용이 아니다 */
+      ...(c.curriculum.length && !c.askList ? { teaches: c.curriculum } : {}),
       hasCourseInstance: {
         '@type': 'CourseInstance',
         courseMode: /온라인/.test(c.method) ? 'online' : 'onsite',

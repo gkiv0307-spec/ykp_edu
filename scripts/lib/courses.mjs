@@ -40,11 +40,14 @@ export async function readCourses(root) {
       ? [...audienceBlock[1].matchAll(/<span>([^<]+)<\/span>/g)].map((m) => m[1])
       : [];
 
-    const contentBlock = body.match(/<div class="course-content">([\s\S]*?)<\/div>/);
+    /* course-ask 가 붙은 목록은 "제공하는 것"이 아니라 "계약 전에 물어볼 것"이다.
+       같은 자리에 두되 성격이 다르므로 구분해서 넘긴다. */
+    const contentBlock = body.match(/<div class="course-content([^"]*)">([\s\S]*?)<\/div>/);
+    const askList = /course-ask/.test(contentBlock?.[1] ?? '');
     const curriculum = contentBlock
-      ? [...contentBlock[1].matchAll(/<li>([^<]+)<\/li>/g)].map((m) => m[1])
+      ? [...contentBlock[2].matchAll(/<li>([^<]+)<\/li>/g)].map((m) => m[1])
       : [];
-    const contentHeading = text(contentBlock?.[1].match(/<h4>([^<]+)<\/h4>/)?.[1]) || '주요 교육 내용';
+    const contentHeading = text(contentBlock?.[2].match(/<h4>([^<]+)<\/h4>/)?.[1]) || '주요 교육 내용';
 
     const supportBlock = body.match(/<dl class="course-support">([\s\S]*?)<\/dl>/);
     const support = supportBlock
@@ -81,6 +84,7 @@ export async function readCourses(root) {
       audience,
       contentHeading,
       curriculum,
+      askList,
       support,
       benefits,
       links,
