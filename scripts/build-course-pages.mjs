@@ -55,17 +55,19 @@ function pageFor(c, all, shell) {
     c.method ? `${c.method},` : null,
     c.duration ? `${c.duration}.` : null,
     `수강료 ${priceLabel(c)}.`,
-    c.goal ? `${c.goal}을 목표로 합니다.` : null,
+    c.goal ? `${c.goal}.` : null,
     '상담료 없이 먼저 문의해 보세요.',
   ].filter(Boolean).join(' ');
 
   const canonical = `${SITE}/${OUT_DIR}/${c.slug}.html`;
   const applyHref = `/apply.html?course=${encodeURIComponent(c.name)}`;
+  const enrollment = c.links.find((l) => /^https:\/\/naver\.me\//.test(l.href));
 
   const content = '<article class="course-page">'
     + '<nav class="listing-crumb" aria-label="현재 위치">'
     + '<a href="/">홈</a><span>›</span><a href="/#courses">수강료·과정</a>'
     + `<span>›</span><em>${esc(c.name)}</em></nav>`
+    + (c.banner ? `<a class="cp-banner" href="${esc(enrollment?.href || applyHref)}"${enrollment ? ' target="_blank" rel="noopener noreferrer"' : ''}><img src="${esc(c.banner)}" alt="${esc(c.name)} · ${esc(priceLabel(c))}" /></a>` : '')
 
     + '<header class="cp-head">'
     + `<p class="eyebrow dark"><span></span> ${esc(c.step)}</p>`
@@ -111,7 +113,7 @@ function pageFor(c, all, shell) {
     + '<p>경매 경험과 목표를 들어보고 맞는 단계를 알려드립니다. '
     + '억지로 상위 과정을 권하지 않습니다.</p>'
     + '<div class="cp-cta-actions">'
-    + `<a class="button button-primary" href="${applyHref}">이 과정 상담 신청 <span>→</span></a>`
+    + `<a class="button button-primary" href="${esc(enrollment?.href || applyHref)}"${enrollment ? ' target="_blank" rel="noopener noreferrer"' : ''}>${enrollment ? '네이버 폼으로 수강 신청' : '이 과정 상담 신청'} <span>→</span></a>`
     + '<a class="button button-ghost" href="https://open.kakao.com/o/s91CvTFf" target="_blank" rel="noreferrer">카카오톡으로 묻기</a>'
     + '<a class="button button-ghost" href="tel:0532810759">전화 053-281-0759</a>'
     + '</div>'
@@ -130,7 +132,7 @@ function pageFor(c, all, shell) {
     title,
     description,
     canonical,
-    image: `${SITE}/assets/ykphone-logo-horizontal.png`,
+    image: `${SITE}${c.banner || '/assets/ykphone-logo-horizontal.png'}`,
     bodyClass: 'page-course',
     jsonLd: [{
       '@context': 'https://schema.org',
@@ -146,7 +148,7 @@ function pageFor(c, all, shell) {
       ...(c.curriculum.length ? { teaches: c.curriculum } : {}),
       hasCourseInstance: {
         '@type': 'CourseInstance',
-        courseMode: /온라인/.test(c.method) ? 'online' : 'onsite',
+        ...(c.slug === 'question-pass' ? {courseMode: 'online'} : /오프라인/.test(c.method) ? {courseMode: 'onsite'} : {}),
         ...(c.slug === 'beginner' ? {startDate: '2026-10-12'} : c.slug === 'intermediate' ? {startDate: '2026-10-13'} : {}),
         location: {
           '@type': 'Place',

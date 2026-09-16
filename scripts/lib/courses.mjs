@@ -16,6 +16,7 @@ const SLUGS = {
   'course-advanced': 'advanced',
   'course-coaching': 'coaching',
   'course-consulting': 'consulting',
+  'course-question-pass': 'question-pass',
 };
 
 const text = (s) => String(s ?? '').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
@@ -84,6 +85,7 @@ export async function readCourses(root) {
       support,
       benefits,
       links,
+      banner: body.match(/<img src="(\/assets\/[^"]+)"/)?.[1] || null,
     };
   }).filter((c) => c.name);
 }

@@ -307,11 +307,11 @@
     },
     intermediate: {
       badge: 'RECOMMENDED',
-      title: '권리·수익분석 실전반',
+      title: '입찰가·수익계산 완성반',
       tagline: '기초는 아는데 수익 계산이 막막하다면.',
       desc: '배당표 분석, 세금, 특수물건까지 다루며 실전 투자 전략을 익히는 과정입니다.',
       href: '/courses/intermediate.html',
-      cta: '권리·수익분석 실전반 자세히 보기',
+      cta: '입찰가·수익계산 완성반 자세히 보기',
     },
     coaching: {
       badge: 'RECOMMENDED',

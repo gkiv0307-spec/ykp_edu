@@ -6379,3 +6379,36 @@ footer {
 @media(min-width:721px) and (max-width:1500px){.site-header nav{gap:16px}.site-header nav a{white-space:nowrap;font-size:13px}.site-header nav a:nth-child(4),.site-header nav a:nth-child(5),.site-header nav a:nth-child(7),.header-socials,.header-call{display:none}.hero{grid-template-columns:1fr 1fr;gap:30px;padding-left:5vw;padding-right:5vw}.hero-properties{transform:none;width:100%;max-width:100%}.hero-feature-card{display:grid;grid-template-columns:1fr;height:auto}.hero-feature-image{height:180px;min-height:180px}.hero-feature-window{height:auto;min-height:440px}.hero-proof{gap:12px}.hero-proof strong{font-size:27px}.hero-proof>div>span{font-size:11px}.floating-consult{right:14px;top:auto;bottom:22px}}
 
 .hero-stats-note{font-size:12px!important;line-height:1.6!important;color:#bfb8a6!important;margin-top:24px!important}.hero-stats-note a{text-decoration:underline}.checklist-page li{margin:12px 0;line-height:1.8}.article-grid article{padding:26px;border:1px solid #d8d8d0;border-radius:12px}.article-grid article p{line-height:1.7;margin:12px 0}.article-grid article a{font-weight:700;text-decoration:underline}
+/* Learning roadmap and student question pass — September 2026. */
+.learning-roadmap{background:radial-gradient(ellipse at 95% 0,#64503555,transparent 50%),#171512;color:#f8f0e3;border:1px solid #b59a6a66;border-radius:20px;margin:0 0 42px;padding:38px;box-shadow:0 24px 60px #34241420;scroll-margin-top:110px}
+.roadmap-heading{display:grid;grid-template-columns:1.3fr 1fr;gap:12px 30px;margin-bottom:30px;align-items:end}
+.roadmap-heading>span{grid-column:1/-1;color:#d3b47d;letter-spacing:.19em;font-size:11px;font-weight:800}
+.roadmap-heading h3{font-size:clamp(25px,3vw,37px);font-weight:800;letter-spacing:-.055em;line-height:1.35;margin:0}
+.roadmap-heading>p{color:#c3b8a6;font-size:14px;line-height:1.8;margin:0;text-align:right}
+.roadmap-track{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;list-style:none;padding:0;margin:0}
+.roadmap-track li{min-width:0;position:relative}
+.roadmap-track li+li:before{content:'→';position:absolute;left:-14px;top:32px;z-index:2;color:#d8b777;font-size:15px}
+.roadmap-track a{position:relative;display:flex;flex-direction:column;height:100%;box-sizing:border-box;min-height:282px;padding:23px 19px 28px;border:1px solid #bea06c4d;border-radius:10px;color:inherit;text-decoration:none;background:linear-gradient(145deg,#5f503530,#ffffff03);transition:background .2s,border-color .2s,transform .2s}
+.roadmap-track a:hover,.roadmap-track a:focus-visible{background:#6c58393d;border-color:#d1ac6b;transform:translateY(-4px);outline:2px solid #d1ac6b;outline-offset:3px}
+.roadmap-step{display:block;color:#dfbf83;font-size:11px;letter-spacing:.14em;font-weight:850;margin-bottom:25px}
+.roadmap-verb{font-size:11px;color:#b7a992;margin-bottom:8px}
+.roadmap-track h4{font-size:21px;line-height:1.4;letter-spacing:-.055em;margin:0 0 12px;word-break:keep-all}
+.roadmap-track p{font-size:12px;line-height:1.7;color:#c5bcaf;margin:0 0 24px;word-break:keep-all}
+.roadmap-track strong{color:#f4dfb9;margin-top:auto;font-size:17px;letter-spacing:-.025em}
+.roadmap-track small{color:#c2ab82;font-size:10px;line-height:1.5;margin-top:7px;max-width:calc(100% - 10px)}
+.roadmap-arrow{position:absolute;bottom:23px;right:16px;color:#ba9c68;font-size:19px}
+.roadmap-alumni{display:flex;align-items:center;flex-wrap:wrap;gap:12px 22px;margin-top:20px;padding:21px 24px;background:#d1b07914;border:1px solid #d1b07938;border-radius:8px;color:#e9d2aa;text-decoration:none}
+.roadmap-alumni>span:first-child{border:1px solid #bda2766b;padding:4px 9px;border-radius:4px;font-size:10px}
+.roadmap-alumni strong{font-size:17px;letter-spacing:-.035em}.roadmap-alumni>span:nth-child(3){font-size:12px;color:#c5b69d}.roadmap-alumni b{margin-left:auto}
+.roadmap-section .course-art{display:block;margin:-32px -32px 25px;background:#171512;overflow:hidden}
+.roadmap-section .course-art img{display:block;width:100%;height:auto;aspect-ratio:1.818;object-fit:contain}
+.roadmap-section .course-art-wide img{aspect-ratio:auto}
+.roadmap-section .course-title{display:block;margin-top:18px}.roadmap-section .course-title h3{font-size:clamp(23px,2.3vw,30px);line-height:1.35;word-break:keep-all}.roadmap-section .course-title p{text-align:left;font-size:13px;margin-top:9px;line-height:1.6;word-break:keep-all}
+.roadmap-section .course-confirm-note{font-size:12px;line-height:1.8;color:#746b5f}
+.roadmap-section .course-card.question-pass-card{display:block;padding:0;margin-top:24px;border-top-color:#b49157;background:#fffdf9}
+.question-pass-art{display:block;background:#171512}.question-pass-art img{display:block;width:100%;height:auto}.question-pass-body{padding:34px}
+.question-pass-body .course-meta{grid-template-columns:1fr 1fr}.question-pass-body .course-content ul{display:grid;grid-template-columns:1fr 1fr;column-gap:28px}.question-pass-body .course-audience{min-height:0}
+.question-boundary{display:grid;grid-template-columns:1fr 1fr;gap:0;margin:24px 0 32px;border:1px solid #9d835a4d;border-radius:12px;overflow:hidden;background:#eae1d3}.question-boundary>div{padding:26px 30px}.question-boundary>div+div{background:#26211b;color:#f3eadb}.question-boundary span{font-size:10px;letter-spacing:.06em;color:#937443}.question-boundary>div+div span{color:#d1b887}.question-boundary h3{font-size:20px;letter-spacing:-.04em;margin:9px 0 10px}.question-boundary p{font-size:13px;line-height:1.85;margin:0;opacity:.8;word-break:keep-all}.question-boundary a{display:inline-block;margin-top:12px;color:#dfc493;font-size:12px}
+.cp-banner{display:block;margin:24px 0 36px;border:1px solid #b69a6b66;border-radius:14px;overflow:hidden;background:#171512}.cp-banner img{display:block;width:100%;height:auto;max-height:520px;object-fit:contain}.cp-head h1{word-break:keep-all}
+@media(max-width:1100px){.learning-roadmap{padding:28px}.roadmap-track{grid-template-columns:repeat(2,minmax(0,1fr))}.roadmap-track a{min-height:260px}.roadmap-track li:nth-child(3):before{content:none}}
+@media(max-width:700px){.learning-roadmap{padding:23px 17px;border-radius:14px;margin-bottom:26px}.roadmap-heading{display:block;margin-bottom:22px}.roadmap-heading>span{display:block;font-size:9px;margin-bottom:15px}.roadmap-heading>p{text-align:left;font-size:12px;margin-top:12px}.roadmap-track{gap:10px}.roadmap-track a{min-height:264px;padding:18px 13px 24px}.roadmap-track h4{font-size:18px}.roadmap-track p{font-size:11px}.roadmap-step{font-size:10px;margin-bottom:17px}.roadmap-track strong{font-size:15px}.roadmap-track small{font-size:9px}.roadmap-track li+li:before{display:none}.roadmap-arrow{right:10px;bottom:18px;font-size:15px}.roadmap-alumni{padding:17px;gap:10px 14px}.roadmap-alumni>span:nth-child(3){width:100%;font-size:11px}.roadmap-alumni b{display:none}.roadmap-section .course-art{margin:-22px -22px 23px}.roadmap-section .course-card{padding:22px}.roadmap-section .course-card.question-pass-card{padding:0}.question-pass-body{padding:23px}.question-pass-body .course-meta{grid-template-columns:1fr}.question-pass-body .course-meta div+div{border-left:0;border-top:1px solid var(--line)}.question-pass-body .course-content ul{display:block}.question-boundary{grid-template-columns:1fr}.question-boundary>div{padding:23px}.cp-banner{margin-top:18px;margin-bottom:26px}}

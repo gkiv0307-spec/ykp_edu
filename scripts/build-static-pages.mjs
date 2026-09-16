@@ -48,12 +48,12 @@ function priceTable(courses) {
         .join('');
     }
     return `<b>${esc(c.price || '상담 후 안내')}</b>`
-      + (c.note ? `<small>${esc(c.note)}</small>` : '');
+      + (c.priceNote ? `<small>${esc(c.priceNote)}</small>` : '');
   };
 
   return '<section class="price-table" id="prices">'
     + '<h2>수강료 한눈에 보기</h2>'
-    + '<p class="price-lead">모든 금액은 부가세와 교재비가 포함된 기준입니다. '
+    + '<p class="price-lead">초급·중급은 부가세·교재비 포함, 투자클럽은 부가세 포함 금액입니다. '
     + '어떤 과정이 맞을지 모르겠다면 위에 연락처만 남겨주세요.</p>'
     + '<div class="price-scroll"><table>'
     + '<thead><tr><th scope="col">과정</th><th scope="col">진행 방식</th>'
@@ -130,7 +130,7 @@ function applyPage(shell, courses) {
     + '<label class="apply-agree">'
     + '<input type="checkbox" id="f-agree" name="개인정보동의" required/>'
     + '<span>상담 연락을 위한 <strong>이름·연락처(필수)</strong>와 직접 입력한 관심분야·경매경험·문의내용·관심물건·과정·희망일시(선택)의 수집·이용에 동의합니다. '
-    + '상담 및 수강 안내 목적으로 사용하며, 삭제 요청은 053-281-0759로 접수합니다. 동의를 거부할 수 있으며 거부 시 이 폼의 접수는 어렵습니다.</span>'
+    + '상담 및 수강 안내 목적으로 사용하며, 신청 정보는 접수일로부터 1년 보관 후 파기합니다. 삭제 요청은 053-281-0759로 접수합니다. 동의를 거부할 수 있으며 거부 시 이 폼의 접수는 어렵습니다.</span>'
     + '</label>'
     + '<p class="apply-error" data-for="f-agree"></p>'
 
