@@ -1,5 +1,25 @@
 [
  {
+  "id": "224413531156",
+  "link": "https://blog.naver.com/ykphone_edu/224413531156",
+  "title": "포항 북구 두산위브더제니스 아파트 경매 3억 6천만원대 2025타경3929",
+  "description": "포항 북구 장성동 두산위브더제니스 108동 37층 3703호 아파트 경매입니다. 감정가 5억2500만원에서 1회 유찰돼 최저가 3억6750만원부터 진행되는 2025타경3929의 점유관계, 권리분석, 최근 실거래가, 관리비와 입찰 포인트를 정리했습니다. 안녕하세요. 옆커폰부동산에듀입니다. 오늘 살펴볼 물건은 경북 포항시 북구 장성동 두산위브더제니스 108동 37층 3703호입니다. 이번 물건은 감정가 5억 2,500만원에서 1회 유찰되어 현재 최저매각가격이 3억 6,750만원까지 내려왔습니다. 감정가의 70% 수준이며 매각기일은 2026년 9월 28일 오전 10시, 입찰보증금은 3,675만원입니다. 가격만 보면 한 번쯤 눈길이 갈 수 있는 물건입니다. 다만 경매에서.......",
+  "name": "두산위브더제니스",
+  "sido": "경북",
+  "sigungu": "포항시",
+  "kind": "아파트",
+  "caseNo": "2025타경3929",
+  "ogImage": "https://blogthumb.pstatic.net/MjAyNjA5MTRfNTgg/MDAxNzg5MzU5OTI3MTQw.0vDZoh8WfVPj-Ap7kemZZVHlSOLtmwpucTKxTnpZ-LQg.zuenf68TkiULVeTm_sNhp5tHia_-eO9vgk74oFhNocwg.PNG/34df4c1c-e93e-416f-b49c-cd8f92642488.png?type=w2",
+  "appraisal": 525000000,
+  "minBid": 367500000,
+  "saleDate": "2026-09-28T00:00:00.000Z",
+  "area": 144.99,
+  "court": null,
+  "pubLabel": "09. 16",
+  "image": "assets/properties/auto/224413531156.webp",
+  "sold": false
+ },
+ {
   "id": "224411105374",
   "link": "https://blog.naver.com/ykphone_edu/224411105374",
   "title": "부산 수영구 이편한세상오션테라스4단지 아파트 경매 1회 유찰 5억 6천만원대 2025타경5436",
@@ -917,26 +937,6 @@
   "court": "대구지방법원서부지원",
   "pubLabel": "08. 12",
   "image": "assets/properties/auto/224375998770.webp",
-  "sold": false
- },
- {
-  "id": "224375211005",
-  "link": "https://blog.naver.com/ykphone_edu/224375211005",
-  "title": "대구 북구 구암동 칠곡금빛타운 경매 아파트 2억1천 아파트가 1억4천대? 권리분석부터 입찰가까지",
-  "description": "대구지방법원 2025타경9035 대구 북구 구암동 칠곡금빛타운 106동 1층 102호 경매 권리분석. 감정가 2억1천만원에서 1회 유찰 후 최저가 1억4,700만원. 말소기준권리, 점유·명도, 최근 실거래가와 입찰가 체크포인트를 분석합니다. 대구 구암동 2억1천 아파트가 1억4천대로? 칠곡금빛타운 경매, 얼마까지 써도 될까 안녕하세요. 옆커폰부동산에듀입니다. 오늘 살펴볼 물건은 대구 북구 구암동에서 역세권과 생활 인프라를 함께 볼 수 있는 아파트 경매입니다. 대구지방법원 2025타경9035 칠곡금빛타운 106동 1층 102호입니다. 감정가는 2억 1,000만원이었지만 1차 입찰에서 유찰되면서, 2026년 8월 25일 2차 매각기일의 최저매각가격은 1억 4,700.......",
-  "name": "칠곡금빛타운",
-  "sido": "대구",
-  "sigungu": "북구",
-  "kind": "아파트",
-  "caseNo": "2025타경9035",
-  "ogImage": "https://blogthumb.pstatic.net/MjAyNjA4MTFfMjA0/MDAxNzg2NDI4ODQxNzY1.IjvXXUvgMyUd_9IDXcKmIrBswFjg0B3Q9FfJW38mwHYg.6emtLxn_lQ3kRyKg_BVv_rDDWYcjEFVwSTdktmP0Bvcg.PNG/image.png?type=w2",
-  "appraisal": 210000000,
-  "minBid": 147000000,
-  "saleDate": null,
-  "area": 84.99,
-  "court": "대구지방법원",
-  "pubLabel": "08. 11",
-  "image": "assets/properties/auto/224375211005.webp",
   "sold": false
  }
 ]
