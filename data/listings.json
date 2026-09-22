@@ -1,5 +1,25 @@
 [
  {
+  "id": "224419593665",
+  "link": "https://blog.naver.com/ykphone_edu/224419593665",
+  "title": "대구 달서구 진천역계룡리슈빌 아파트 경매 1회 유찰 4억 2070만원대 2026타경3409",
+  "description": "감정가 6억 100만원에서 1회 유찰 진천역 도보권 대형면적 아파트가 4억 2070만원부터 시작합니다 대구 달서구 진천역계룡리슈빌 아파트 경매 1회 유찰 4억 2070만원대 2026타경3409 안녕하세요. 옆커폰부동산에듀입니다. 오늘 살펴볼 물건은 대구 달서구 진천동에 위치한 진천역계룡리슈빌아파트 105동 4층 403호입니다. 감정가는 6억 100만원이었지만 1차 입찰에서 유찰되면서 현재 최저매각가격은 감정가의 70%인 4억 2070만원까지 내려왔습니다. 전용면적도 144.2979㎡로 약 43.65평에 해당하는 대형면적입니다. 진천역계룡리슈빌 경매 기본정보 사건번호는 대구지방법원 서부지원 2026타경3409입니다. 소재지는 대구광역시 달서구 진천동 60.......",
+  "name": "진천역계룡리슈빌아파트",
+  "sido": "대구",
+  "sigungu": "달서구",
+  "kind": "아파트",
+  "caseNo": "2026타경3409",
+  "ogImage": "https://blogthumb.pstatic.net/MjAyNjA5MjJfMTgg/MDAxNzkwMDQyMjY4OTc3.grmt0z5ST5tQA70L2H1LlS9eGHSqUHzXJ7PI0qT3Ph8g.WWrFWsfgUuWctNzF0N2vUc_Xrww_PLRHXkLpESPvuA4g.PNG/57fe27ac-c707-4c61-9368-2c5eb3186f54.png?type=w2",
+  "appraisal": 601000000,
+  "minBid": 420700000,
+  "saleDate": "2026-10-15T00:00:00.000Z",
+  "area": 144.2979,
+  "court": "대구지방법원서부지원",
+  "pubLabel": "09. 22",
+  "image": "assets/properties/auto/224419593665.webp",
+  "sold": false
+ },
+ {
   "id": "224416088907",
   "link": "https://blog.naver.com/ykphone_edu/224416088907",
   "title": "강원 원주 원주롯데캐슬더퍼스트 아파트 경매 1회 유찰 1억 4천만원대 2025타경21041",
@@ -917,26 +937,6 @@
   "court": "대구지방법원",
   "pubLabel": "08. 24",
   "image": "assets/properties/auto/224388238143.webp",
-  "sold": false
- },
- {
-  "id": "224388216407",
-  "link": "https://blog.naver.com/ykphone_edu/224388216407",
-  "title": "대구 중구 경매아파트 5억대 아파트가 3억1천? 극동스타클래스남산 경매  얼마까지 써도 될까 2026타경100305",
-  "description": "대구 중구 남산동 극동스타클래스남산 104동 21층 2102호 경매. 감정가 4억5,000만원에서 1회 유찰 후 최저가 3억1,500만원으로 진행됩니다. 말소기준권리, 임차인·점유관계, 관리비 체납, 최근 실거래가와 주변 입지까지 분석해 적정 입찰가를 살펴봅니다. 감정가 4억 5,000만 원짜리 대구 중구 아파트를 3억 1,500만 원부터 살 수 있다면 어떨까요? 안녕하세요. 옆커폰부동산에듀입니다. 오늘은 대구 중구 남산동에 위치한 극동스타클래스남산 104동 21층 2102호 경매 물건을 살펴보겠습니다. 감정가가 4억 5,000만 원인데 1회 유찰되면서 현재는 3억 1,500만 원부터 입찰이 가능합니다. 최근 동일 면적 실거래가가 4억 원대 중후반까지 확인되.......",
-  "name": "극동스타클래스남산",
-  "sido": "대구",
-  "sigungu": "중구",
-  "kind": "아파트",
-  "caseNo": "2026타경100305",
-  "ogImage": "https://blogthumb.pstatic.net/MjAyNjA4MjRfMTg5/MDAxNzg3NTM0NTIyNjQ5.JsR02bqwTbn-KIK5hk4Rgq3-OwrcNuezygwR6oPOAQwg.ir7kiruAduGGiTSQ8UwYMiYeb2z5sWPoJ-vCiJ6uLKEg.PNG/Codex_%C0%CC%B9%CC%C1%F6_2026%B3%E2_8%BF%F9_24%C0%CF_%BF%C0%C0%FC_10_20_52.png?type=w2",
-  "appraisal": 450000000,
-  "minBid": 315000000,
-  "saleDate": "2026-09-07T00:00:00.000Z",
-  "area": 84.83,
-  "court": "대구지방법원",
-  "pubLabel": "08. 24",
-  "image": "assets/properties/auto/224388216407.webp",
   "sold": false
  }
 ]
