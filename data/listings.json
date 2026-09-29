@@ -80,26 +80,6 @@
   "sold": false
  },
  {
-  "id": "224414724944",
-  "link": "https://blog.naver.com/ykphone_edu/224414724944",
-  "title": "경산 펜타힐즈더샵2차 아파트 경매 1회 유찰 2억8천만원대 2026타경100691",
-  "description": "경북 경산 중산동 펜타힐즈더샵2차 202동 401호 경매 2026타경100691. 감정가 4억원에서 1회 유찰돼 최저가 2억8000만원으로 진행됩니다. 최근 동일면적 4억대 실거래와 HUG 대항력 임차인 보증금 및 배당 위험을 함께 분석했습니다. 같은 면적 최근 4억대 거래 그런데 경매는 2억8천만원부터 대항력 있는 임차인이 핵심입니다 안녕하세요. 옆커폰부동산에듀입니다. 경산 중산동에서 아파트 경매를 찾고 계셨다면 이번 물건은 가격만 보고도 눈길이 갈 수 있습니다. 펜타힐즈더샵2차 전용 77.97㎡ 물건으로, 감정가는 4억원이었지만 1회 유찰되면서 현재 최저매각가격이 2억 8,000만원까지 내려왔습니다. 최근 같은 면적의 실제 매매가격이 4억원.......",
-  "name": "펜타힐즈더샵2차",
-  "sido": "대구",
-  "sigungu": "수성구",
-  "kind": "아파트",
-  "caseNo": "2026타경100691",
-  "ogImage": "https://blogthumb.pstatic.net/MjAyNjA5MTdfMTcw/MDAxNzg5NjEzNDQ5ODEw.wO_5gtgI71kwWy3hgypXIo6TQKgmSZnJ9nc6Bc7h0Wkg.2ZRe0G68iVx0qM01OHt7JaoKoYbhRSzWIH_7oZt_1IEg.PNG/da0e0d03-1b6c-4fe4-8743-466646afe3af.png?type=w2",
-  "appraisal": 400000000,
-  "minBid": 280000000,
-  "saleDate": "2026-10-08T00:00:00.000Z",
-  "area": 77.968,
-  "court": "대구지방법원",
-  "pubLabel": "09. 17",
-  "image": "assets/properties/auto/224414724944.webp",
-  "sold": false
- },
- {
   "id": "224414686287",
   "link": "https://blog.naver.com/ykphone_edu/224414686287",
   "title": "포항 남구 대잠센트럴하이츠 아파트 경매 1회 유찰 3억 7100만원 2025타경3968",
@@ -937,6 +917,26 @@
   "court": "대구지방법원",
   "pubLabel": "08. 24",
   "image": "assets/properties/auto/224388238143.webp",
+  "sold": false
+ },
+ {
+  "id": "224388216407",
+  "link": "https://blog.naver.com/ykphone_edu/224388216407",
+  "title": "대구 중구 경매아파트 5억대 아파트가 3억1천? 극동스타클래스남산 경매  얼마까지 써도 될까 2026타경100305",
+  "description": "대구 중구 남산동 극동스타클래스남산 104동 21층 2102호 경매. 감정가 4억5,000만원에서 1회 유찰 후 최저가 3억1,500만원으로 진행됩니다. 말소기준권리, 임차인·점유관계, 관리비 체납, 최근 실거래가와 주변 입지까지 분석해 적정 입찰가를 살펴봅니다. 감정가 4억 5,000만 원짜리 대구 중구 아파트를 3억 1,500만 원부터 살 수 있다면 어떨까요? 안녕하세요. 옆커폰부동산에듀입니다. 오늘은 대구 중구 남산동에 위치한 극동스타클래스남산 104동 21층 2102호 경매 물건을 살펴보겠습니다. 감정가가 4억 5,000만 원인데 1회 유찰되면서 현재는 3억 1,500만 원부터 입찰이 가능합니다. 최근 동일 면적 실거래가가 4억 원대 중후반까지 확인되.......",
+  "name": "극동스타클래스남산",
+  "sido": "대구",
+  "sigungu": "중구",
+  "kind": "아파트",
+  "caseNo": "2026타경100305",
+  "ogImage": "https://blogthumb.pstatic.net/MjAyNjA4MjRfMTg5/MDAxNzg3NTM0NTIyNjQ5.JsR02bqwTbn-KIK5hk4Rgq3-OwrcNuezygwR6oPOAQwg.ir7kiruAduGGiTSQ8UwYMiYeb2z5sWPoJ-vCiJ6uLKEg.PNG/Codex_%C0%CC%B9%CC%C1%F6_2026%B3%E2_8%BF%F9_24%C0%CF_%BF%C0%C0%FC_10_20_52.png?type=w2",
+  "appraisal": 450000000,
+  "minBid": 315000000,
+  "saleDate": "2026-09-07T00:00:00.000Z",
+  "area": 84.83,
+  "court": "대구지방법원",
+  "pubLabel": "08. 24",
+  "image": "assets/properties/auto/224388216407.webp",
   "sold": false
  }
 ]
