@@ -1,5 +1,5 @@
 /**
- * 네이버 블로그(ykphone_edu) RSS에서 최신 경매물건 글을 읽어
+ * 운영 블로그 3개의 RSS에서 최신 경매물건 글을 읽어
  * index.html 의 "전국 경매물건" 카드 목록을 통째로 다시 만든다.
  *
  *   node scripts/update-listings.mjs          실제 갱신
@@ -13,22 +13,21 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { normalizeListings } from './lib/listing-quality.mjs';
+import { BLOG_IDS, REGION_GROUPS, regionGroup } from './lib/listing-sources.mjs';
 import { buildListingPages, slugOf } from './build-listing-pages.mjs';
 import { buildSitemap } from './build-sitemap.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const BLOG_ID = 'ykphone_edu';
-const RSS_URL = `https://rss.blog.naver.com/${BLOG_ID}.xml`;
 const IMAGE_DIR = path.join(ROOT, 'assets', 'properties', 'auto');
 const IMAGE_HREF = 'assets/properties/auto';
 const INDEX_FILE = path.join(ROOT, 'index.html');
 const DRY_RUN = process.argv.includes('--dry');
 
-/* 지역 필터에 항상 넣어둘 순서. 실제 물건이 있는 지역만 노출된다. */
+/* 주소에서 시/도를 인식할 때 사용. 화면의 권역 탭과는 별개다. */
 const REGION_ORDER = ['서울', '경기', '인천', '대전', '대구', '부산', '울산', '광주', '세종', '강원', '충북', '충남', '전북', '전남', '경북', '경남', '제주'];
 
 /* 제목에서 단지명을 뽑을 때 잘라낼 단어들 */
-const TITLE_STOPWORDS = /^(아파트|오피스텔|빌라|다세대|연립|상가|토지|주택|숙박시설|경매|공매|물건|매각|낙찰|유찰|\d+회|\d+차)$/;
+const TITLE_STOPWORDS = /^(아파트|오피스텔|빌라|다세대|연립|상가|토지|주택|숙박시설|경매|공매|물건|매각|낙찰|유찰|매매.*|최저.*|전용.*|\d+회|\d+차)$/;
 
 const UA_MOBILE = 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1';
 
@@ -37,7 +36,7 @@ const UA_MOBILE = 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleW
 const log = (...a) => console.log(...a);
 
 async function fetchText(url, headers = {}) {
-  const res = await fetch(url, { headers: { 'User-Agent': UA_MOBILE, ...headers } });
+  const res = await fetch(url, { headers: { 'User-Agent': UA_MOBILE, ...headers }, signal: AbortSignal.timeout(30000) });
   if (!res.ok) throw new Error(`HTTP ${res.status} ${url}`);
   return res.text();
 }
@@ -109,7 +108,7 @@ function todayKST() {
 
 /* ------------------------------------------------------------- RSS 읽기 */
 
-function parseRss(xml) {
+function parseRss(xml, blogId) {
   const items = [];
   for (const m of xml.matchAll(/<item>([\s\S]*?)<\/item>/g)) {
     const block = m[1];
@@ -118,11 +117,13 @@ function parseRss(xml) {
       if (!t) return '';
       return decodeEntities(t[1].replace(/^\s*<!\[CDATA\[/, '').replace(/\]\]>\s*$/, '')).trim();
     };
-    const link = pick('link').replace(/\?.*$/, '');
-    const id = link.match(/\/(\d+)$/)?.[1];
+    const rawLink = new URL(pick('link'), `https://blog.naver.com/${blogId}`);
+    const id = rawLink.pathname.match(/\/(\d+)$/)?.[1] || rawLink.searchParams.get('logNo');
     if (!id) continue;
+    const link = `https://blog.naver.com/${blogId}/${id}`;
     items.push({
       id,
+      blogId,
       link,
       title: pick('title'),
       category: pick('category'),
@@ -133,11 +134,45 @@ function parseRss(xml) {
   return items;
 }
 
+async function collectRss(fetcher = fetchText) {
+  const feeds = await Promise.all(BLOG_IDS.map(async (blogId) => {
+    const items = parseRss(await fetcher(`https://rss.blog.naver.com/${blogId}.xml`), blogId);
+    // A missing/renamed feed can return HTTP 200 with no posts. Do not erase
+    // that source from the published inventory because of an upstream failure.
+    if (!items.length) throw new Error(`${blogId}: RSS 글이 없어 기존 목록을 유지합니다.`);
+    log(`  ${blogId}: RSS 글 ${items.length}건`);
+    return items;
+  }));
+  return feeds.flat();
+}
+
+/** Ignore navigation, related posts and profile addresses outside the article. */
+function articleText(html) {
+  const start = html.search(/<div\b[^>]*class=["'][^"']*\bse-main-container\b/i);
+  if (start < 0) return '';
+  const scope = html.slice(start);
+  let depth = 0;
+  for (const tag of scope.matchAll(/<\/?div\b[^>]*>/gi)) {
+    depth += tag[0].startsWith('</') ? -1 : 1;
+    if (!depth) {
+      const content = scope.slice(0, tag.index + tag[0].length);
+      const paragraphs = [...content.matchAll(/<p\b[^>]*class=["'][^"']*\bse-text-paragraph\b[^"']*["'][^>]*>([\s\S]*?)<\/p>/gi)];
+      // Map/check-in widgets often show the academy address before the actual
+      // property. Only article paragraphs (including table cells) are evidence.
+      return decodeEntities(paragraphs.map((p) => toPlainText(p[1])).join(' '));
+    }
+  }
+  return '';
+}
+
 /* ------------------------------------------------------- 글 1건 정보 추출 */
 
 /** 제목에서 지역(시/도, 시군구)과 단지명을 뽑는다. */
 function parseTitle(title) {
-  let t = title.replace(/\s*\d{4}\s*타경\s*\d+.*$/, '').trim();
+  let t = title.replace(/\s*\d{4}\s*타경\s*\d+.*$/, '').split(/[|｜]/)[0].trim();
+  if (t.includes('!')) t = t.slice(t.lastIndexOf('!') + 1).trim();
+  // New posts also use 붙여쓰기: "대구아파트경매", "부산경매아파트".
+  t = t.replace(new RegExp(`^(${REGION_ORDER.join('|')})(?:아파트경매|경매아파트|경매물건|경매)`), '$1 ');
 
   const tokens = t.split(/\s+/);
   let sido = null;
@@ -159,11 +194,12 @@ function parseTitle(title) {
   const nameParts = [];
   for (let i = idx; i < tokens.length; i += 1) {
     const tok = tokens[i];
+    if (/(동|읍|면)$/.test(tok) && !nameParts.length) continue;
     if (TITLE_STOPWORDS.test(tok)) break;
     if (/원대?$/.test(tok) && /\d/.test(tok)) break;
     if (/^\d/.test(tok)) break;
-    nameParts.push(tok);
-    if (nameParts.length >= 3) break;
+    nameParts.push(tok.replace(/[,·]$/, ''));
+    if (/[,·]$/.test(tok) || nameParts.length >= 3) break;
   }
 
   return { sido, sigungu, name: nameParts.join(' ').trim() || null };
@@ -196,7 +232,8 @@ function parseDetails(text) {
   ]);
 
   /* "매각기일 : 2026년 9월 23일", "3차 매각기일은 2026년 9월 15일", "매각기일 2026.9.23" 모두 허용 */
-  const dateM = text.match(/매각기일[^\d]{0,8}(\d{4})\s*[년.]\s*(\d{1,2})\s*[월.]\s*(\d{1,2})\s*일?/);
+  const dateM = text.match(/(?:매각기일|입찰기일|입찰일)[^\d]{0,8}(\d{4})\s*[년.\/-]\s*(\d{1,2})\s*[월.\/-]\s*(\d{1,2})\s*일?/)
+    || text.match(/(?:입찰)?보증금[^]{0,65}?(\d{4})[.-](\d{1,2})[.-](\d{1,2})(?:\([가-힣]\))?\s*(?:오전|오후|\d{1,2}:)/);
   const saleDate = dateM
     ? new Date(Number(dateM[1]), Number(dateM[2]) - 1, Number(dateM[3]))
     : null;
@@ -216,18 +253,18 @@ const SIDO_ALIAS = { 서울특별시: '서울', 부산광역시: '부산', 대�
  * 본문의 "소재지 : 대구 수성구 상록로 15 물건 : 범어센트럴푸르지오 102동 4층 402호"
  * 같은 정보 블록에서 지역과 단지명을 뽑는다. 제목보다 훨씬 정확하다.
  */
-function parseLocation(text) {
+function parseLocation(text, title = '') {
   let sido = null;
   let sigungu = null;
 
   /* 긴 이름("대구광역시")이 짧은 이름("대구")보다 먼저 매칭되도록 길이순 정렬 */
   const sidoNames = Object.keys(SIDO_ALIAS).concat(REGION_ORDER)
     .sort((a, b) => b.length - a.length).join('|');
-  const locRe = new RegExp(`(${sidoNames})\\s*([가-힣]{2,6}(?:구|군|시))`, 'g');
+  const locRe = new RegExp(`(${sidoNames})\\s+([가-힣]{1,6}(?:구|군|시))`, 'g');
   const NOT_SIGUNGU = /^(광역시|특별시|특별자치시|자치시|자치구|직할시)$/;
 
   /* 소재지 근처를 먼저 보고, 없으면 본문 전체에서 찾되 법원 주소는 건너뛴다. */
-  const near = text.match(/소재지[^]{0,60}/)?.[0];
+  const near = text.match(/(?:소재지|주소)[^]{0,100}/)?.[0];
   const scan = (hay) => {
     if (!hay) return null;
     for (const m of hay.matchAll(locRe)) {
@@ -244,11 +281,23 @@ function parseLocation(text) {
     sido = SIDO_ALIAS[locM[1]] || locM[1];
     sigungu = locM[2];
   }
+  // An address may omit the province (e.g. "무안군 삼향읍"). Only infer
+  // these unambiguous localities, never the court or the academy's address.
+  if (!sido) {
+    const local = (near || text.slice(0, 1800)).match(/(?:^|\s)(수성구|달서구|달성군|무안군|목포시|여수시|순천시|영암군|해남군|나주시|전주시|군산시|익산시|제주시|서귀포시|춘천시|원주시|강릉시|속초시|천안시|아산시|청주시|충주시|포항시|경주시|구미시|경산시|영천시|창원시|김해시|진주시|양산시)\s/);
+    const localProvinces = {대구:['수성구','달서구','달성군'],전남:['무안군','목포시','여수시','순천시','영암군','해남군','나주시'],전북:['전주시','군산시','익산시'],제주:['제주시','서귀포시'],강원:['춘천시','원주시','강릉시','속초시'],충남:['천안시','아산시'],충북:['청주시','충주시'],경북:['포항시','경주시','구미시','경산시','영천시'],경남:['창원시','김해시','진주시','양산시']};
+    if (local) {
+      sigungu = local[1];
+      sido = Object.keys(localProvinces).find((p) => localProvinces[p].includes(sigungu));
+    }
+  }
 
   /* 단지명: 정확한 것부터 차례로 시도 */
   const nameCandidates = [
     /물건\s*[:：]\s*([가-힣A-Za-z0-9]{2,20})/,
     /([가-힣A-Za-z0-9]{2,20}?)\s*\d{1,3}동\s*(?:\d{1,2}층\s*)?[\d-]{1,6}호/,
+    /([가-힣A-Za-z0-9]{2,30}?)\s*\d{1,4}동\s*\d{1,2}층/,
+    /([가-힣A-Za-z0-9]{3,30})\s*[,·]?\s+전용\s*\d/,
     /([가-힣A-Za-z0-9]{2,20}?)\s*\d{1,2}층\s*[\d-]{1,6}호/,
     /소재지[^]{0,60}?,\s*([가-힣A-Za-z0-9]{2,20})\s*(?:전용|감정|매각)/,
     /소재지[^]{0,60}?\s([가-힣A-Za-z0-9]{3,20})\s*전용면적/,
@@ -258,25 +307,29 @@ function parseLocation(text) {
     || /^[\d\s-]+$/.test(v)          // "10", "704"
     || /^\d/.test(v)                 // 숫자로 시작
     || /(동|층|호|로|길|번지)$/.test(v) // "704동", "14층", 도로명
-    || /^(소재지|물건|전용면적|감정가|최저가|경매|아파트|블로그)$/.test(v)
+    || /^(소재지|물건|전용면적|감정가|최저가|경매|아파트|블로그|오늘은|이번에는|물건은|같은|동호수|본건|물건의|있습니다|이번|단지의)$/.test(v)
   );
 
   /* 단지명도 소재지 근처를 먼저 본다. 사무실 건물명이 페이지 곳곳에 박혀 있어서
      전체 텍스트만 훑으면 엉뚱한 이름이 잡힌다. */
-  const nameScope = text.match(/(?:소재지|물건\s*[:：])[^]{0,220}/)?.[0];
+  const nameScope = text.match(/(?:소재지|주소|물건\s*[:：])[^]{0,220}/)?.[0];
   const findName = (hay) => {
     if (!hay) return null;
     for (const re of nameCandidates) {
-      const m = hay.match(re);
-      if (!m) continue;
-      const v = m[1].trim();
-      if (isBadName(v)) continue;
-      return v;
+      for (const m of hay.matchAll(new RegExp(re.source, 'g'))) {
+        const v = m[1].trim();
+        if (isBadName(v)) continue;
+        // Narrative words such as "본건은" can precede both areas and unit
+        // numbers. The headline must corroborate the building name.
+        const compact = (s) => s.replace(/아파트|경매|\s/g, '').toLowerCase();
+        if (title && !compact(title).includes(compact(v))) continue;
+        return v;
+      }
     }
     return null;
   };
 
-  const name = findName(nameScope) || findName(text);
+  const name = findName(text.slice(0, 1800)) || findName(nameScope);
 
   return { sido, sigungu, name };
 }
@@ -293,12 +346,14 @@ function guessKind(text, title) {
   return '아파트';
 }
 
-async function buildListing(item) {
+async function buildListing(item, fetcher = fetchText) {
   let pageText = '';
+  let pageCourt = null;
   let ogImage = null;
   try {
-    const html = await fetchText(`https://m.blog.naver.com/${BLOG_ID}/${item.id}`);
-    pageText = toPlainText(html);
+    const html = await fetcher(`https://m.blog.naver.com/${item.blogId}/${item.id}`);
+    pageText = articleText(html);
+    pageCourt = parseDetails(toPlainText(html)).court;
     ogImage = html.match(/<meta\s+property="og:image"\s+content="([^"]+)"/)?.[1] || null;
   } catch (err) {
     log(`  ! 본문을 못 읽음 (${item.id}): ${err.message}`);
@@ -312,25 +367,22 @@ async function buildListing(item) {
     minBid: fromBody.minBid ?? fromRss.minBid,
     saleDate: fromBody.saleDate ?? fromRss.saleDate,
     area: fromBody.area ?? fromRss.area,
-    court: fromBody.court ?? fromRss.court,
+    court: fromBody.court ?? fromRss.court ?? pageCourt,
   };
 
-  /* 지역·단지명은 본문 정보블록 → RSS 요약 → 제목 순으로 신뢰한다. */
-  const locBody = parseLocation(pageText);
-  const locRss = parseLocation(item.description);
+  /* 단지명은 제목과 대조하고, 지역은 시/도·시군구 한 쌍으로 읽는다. */
+  const locBody = parseLocation(pageText, item.title);
+  const locRss = parseLocation(item.description, item.title);
   const locTitle = parseTitle(item.title);
-  /* RSS 요약문이 글마다 고유하고 군더더기가 없어 가장 믿을 만하다.
-     본문 HTML에는 학원 사무실 주소·관련글이 섞여 있어 오탐이 난다.
-     지역과 단지명은 반드시 같은 출처에서 가져온다 —
-     섞어 쓰면 "부산 물건인데 대구 수성구" 같은 어긋남이 생긴다. */
   /* 지역: 제목이 거의 항상 "대구 수성구 …" 로 시작하므로 제목을 먼저 믿는다.
      시/도와 시군구는 반드시 한 출처에서 짝으로 가져온다. */
-  const regionSrc = [locTitle, locRss, locBody].find((l) => l.sido) ?? {};
+  const regionSrc = [locTitle, locRss, locBody].find((l) => l.sido && l.sigungu)
+    || [locTitle, locRss, locBody].find((l) => l.sido) || {};
   const sido = regionSrc.sido ?? null;
   const sigungu = regionSrc.sigungu ?? null;
 
-  /* 단지명: RSS 요약문 첫 문장이 가장 깨끗하다. */
-  const rawName = [locRss, locTitle, locBody].map((l) => l.name).find(Boolean) ?? null;
+  /* 본문과 RSS의 주소·동호수에서 읽은 이름을 먼저 사용한다. */
+  const rawName = [locBody, locRss, locTitle].map((l) => l.name).find(Boolean) ?? null;
   const name = rawName
     ? rawName.replace(/\s*(경매|아파트\s*경매|물건)?\s*[,.·\-]+\s*$/, '').trim()
     : null;
@@ -339,6 +391,8 @@ async function buildListing(item) {
 
   return {
     id: item.id,
+    blogId: item.blogId,
+    pubDate: item.pubDate,
     link: item.link,
     title: item.title,
     /* 상세 페이지의 "물건 요약"에 쓴다 (앞 두 문장만 발췌) */
@@ -348,6 +402,8 @@ async function buildListing(item) {
     sigungu,
     kind: guessKind(pageText || item.description, item.title),
     caseNo: caseNo ? caseNo.replace(/\s+/g, '') : null,
+    unit: pageText.match(/(\d{1,4})동\s*(?:\d+층\s*)?(\d{1,5})호/)?.slice(1).join('-') || null,
+    lotNo: pageText.match(/물건\s*번호\s*[:：]?\s*(\d+)/)?.[1] || null,
     ogImage,
     ...d,
   };
@@ -382,7 +438,7 @@ async function downloadImage(listing) {
 
 function renderCard(l, i, sold) {
   const accent = `accent-${(i % 3) + 1}`;
-  const region = l.sido || '기타';
+  const region = regionGroup(l.sido);
   const place = [l.sido, l.sigungu].filter(Boolean).join(' · ') || '전국';
   const price = l.minBid ? `최저가 ${formatKoreanMoney(l.minBid)}` : '최저가 확인 필요';
   const img = l.image || 'assets/ykphone-logo-mark.png';
@@ -436,11 +492,9 @@ function renderCard(l, i, sold) {
     `</article>`;
 }
 
-function renderFilterBar(listings) {
-  const present = new Set(listings.map((l) => l.sido).filter(Boolean));
-  const regions = REGION_ORDER.filter((r) => present.has(r));
-  const buttons = ['<button class="active">전체</button>']
-    .concat(regions.map((r) => `<button class="">${r}</button>`));
+function renderFilterBar() {
+  const buttons = ['<button type="button" class="active" aria-pressed="true">전체</button>']
+    .concat(REGION_GROUPS.map(({label}) => `<button type="button" aria-pressed="false">${label}</button>`));
   return `<div class="filter-bar" aria-label="지역 필터">${buttons.join('')}</div>`;
 }
 
@@ -459,7 +513,7 @@ function renderGrids(active, sold) {
 
   return grid(active, 'active', false) + grid(sold, 'sold', true) +
     '<p class="filter-empty" hidden>이 지역은 아직 등록된 물건이 없습니다. ' +
-    `<a href="https://blog.naver.com/${BLOG_ID}" target="_blank" rel="noreferrer">블로그에서 전체 물건 보기 ↗</a></p>` +
+    BLOG_IDS.map((id, i) => `<a href="https://blog.naver.com/${id}" target="_blank" rel="noreferrer">블로그 ${i + 1} 보기 ↗</a>`).join(' · ') + '</p>' +
     '<nav class="feed-pagination" aria-label="물건 목록 페이지 이동" hidden>' +
     '<button type="button" class="feed-page-prev" aria-label="이전 페이지">← 이전</button>' +
     '<div class="feed-page-nums"></div>' +
@@ -477,7 +531,7 @@ function patchIndex(html, { filterBar, statusTabs, grids, updatedLabel }) {
 
   out = out.replace(
     /<div class="sample-notice">[\s\S]*?<\/div>/,
-    `<div class="sample-notice"><strong>블로그 연동</strong>블로그에 올라온 최신 물건을 블로그 기준으로 가져옵니다. 기일 경과는 낙찰을 의미하지 않습니다. 카드를 누르면 물건 상세정보를 볼 수 있습니다. <em class="feed-updated">${updatedLabel} 기준</em></div>`,
+    `<div class="sample-notice"><strong>블로그 3개 연동</strong>운영 중인 블로그 3곳의 최신 경매물건을 모았습니다. 기일 경과는 낙찰을 의미하지 않습니다. 카드를 누르면 상세정보와 원문을 볼 수 있습니다. <em class="feed-updated">${updatedLabel} 기준</em></div>`,
   );
 
   const start = out.indexOf('<div class="property-feed-grid"');
@@ -490,29 +544,50 @@ function patchIndex(html, { filterBar, statusTabs, grids, updatedLabel }) {
 
 /* ------------------------------------------------------------------ main */
 
-async function main() {
+function assignDetailSlugs(listings, previous = []) {
+  const old = new Map(previous.map((l) => [l.id, slugOf(l)]));
+  const used = new Set();
+  // Keep published URLs for surviving posts before allocating new ones.
+  for (const l of listings) {
+    const slug = old.get(l.id);
+    if (slug && !used.has(slug)) { l.detailSlug = slug; used.add(slug); }
+  }
+  for (const l of listings) {
+    if (l.detailSlug) continue;
+    const base = slugOf(l);
+    l.detailSlug = used.has(base) ? `${base}-post${l.id}` : base;
+    used.add(l.detailSlug);
+  }
+}
+
+async function main(fetcher = fetchText) {
+  const dataPath = path.join(ROOT, 'data', 'listings.json');
+  const previous = existsSync(dataPath) ? JSON.parse(await readFile(dataPath, 'utf8')) : [];
   log('· RSS 내려받는 중…');
-  const items = parseRss(await fetchText(RSS_URL));
+  const items = await collectRss(fetcher);
   log(`  RSS 글 ${items.length}건`);
 
   const candidates = items.filter((it) => {
     if (it.category.trim() === '공지사항') return false;
     const hay = `${it.title} ${it.description}`;
-    return /타경/.test(hay) && /경매/.test(hay);
+    return /경매/.test(hay);
   });
   log(`  물건 글 후보 ${candidates.length}건`);
 
   let listings = [];
   for (const [i, it] of candidates.entries()) {
     log(`· (${i + 1}/${candidates.length}) ${it.title.slice(0, 40)}`);
-    const l = await buildListing(it);
+    const l = await buildListing(it, fetcher);
     l.pubLabel = it.pubDate ? new Date(it.pubDate).toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' }).replace(/\.$/, '') : '';
-    if (!l.minBid && !l.appraisal) { log('  - 금액을 못 읽어 건너뜀'); continue; }
+    if (!l.caseNo || (!l.minBid && !l.appraisal)) { log('  - 사건번호 또는 금액을 못 읽어 건너뜀'); continue; }
     l.image = await downloadImage(l);
     listings.push(l);
   }
 
   listings = normalizeListings(listings);
+  if (!listings.length) throw new Error('읽어온 물건이 없어 기존 목록을 유지합니다.');
+  // Different courts/lots can share a case number. Keep every detail URL unique.
+  assignDetailSlugs(listings, previous);
   const today = todayKST();
   const active = listings.filter((l) => !l.sold);
   const sold = listings.filter((l) => l.sold);
@@ -579,4 +654,4 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   await main();
 }
 
-export { renderFilterBar, renderStatusTabs, renderGrids, patchIndex };
+export { renderFilterBar, renderStatusTabs, renderGrids, patchIndex, parseRss, collectRss, articleText, parseTitle, parseLocation, parseDetails, buildListing, assignDetailSlugs, main };

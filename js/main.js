@@ -139,7 +139,10 @@
     filterBar.addEventListener('click', (e) => {
       const btn = e.target.closest('button');
       if (!btn) return;
-      filterBar.querySelectorAll('button').forEach((b) => b.classList.remove('active'));
+      filterBar.querySelectorAll('button').forEach((b) => {
+        b.classList.remove('active');
+        b.setAttribute('aria-pressed', String(b === btn));
+      });
       btn.classList.add('active');
       applyRegionFilter(btn.textContent.trim());
     });

@@ -34,6 +34,7 @@ const won = (n) => (Number.isFinite(n) && n > 0
  * 검색 키워드는 제목·본문이 담당하므로 주소가 영문이어도 손해가 없다.
  */
 export function slugOf(l) {
+  if (l.detailSlug && /^[0-9A-Za-z-]+$/.test(l.detailSlug)) return l.detailSlug;
   const base = l.caseNo ? l.caseNo.replace(/타경/g, 'tg') : `post${l.id}`;
   const ascii = base.replace(/[^0-9A-Za-z]/g, '');
   return ascii || `post${l.id}`;
