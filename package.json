@@ -6,6 +6,7 @@
     "update-instagram": "node scripts/update-instagram.js",
     "check-court-status": "node scripts/check-court-status.js",
     "update-listings": "node scripts/update-listings.mjs",
+    "update-insights": "node scripts/update-insights.mjs",
     "mgmt-fee": "node scripts/legal/mgmt-fee-succession.js",
     "case-status": "node scripts/legal/case-status.js",
     "law": "node scripts/legal/law-api.js",
