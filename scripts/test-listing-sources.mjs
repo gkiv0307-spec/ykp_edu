@@ -36,6 +36,14 @@ assert.equal(listing.sido, '부산');
 assert.equal(listing.name, '테스트타운');
 assert.equal(listing.caseNo, '2026타경99');
 assert.equal(listing.minBid, 140000000);
+const titledPrice = await buildListing({
+  id:'789',
+  blogId:'rhghwjd369',
+  title:'울산아파트경매 테스트타운 1회 유찰 최저가 5억 8,520만원｜2026타경52',
+  description:'',
+  link:'https://blog.naver.com/rhghwjd369/789',
+}, async () => '<div class="se-main-container"><p class="se-text-paragraph">감정가 8억 3,600만원 다음 회차 최저가 4억 964만원</p></div>');
+assert.equal(titledPrice.minBid, 585200000, 'title minimum must override hypothetical later-round prices');
 assert(renderGrids([listing], []).includes('data-region="부산/경남권"'));
 assert.notEqual(slugOf({...listing,detailSlug:'2026tg99-post123'}), slugOf({...listing,detailSlug:'2026tg99-post456'}));
 const duplicates = [{...listing,id:'456'}, {...listing,id:'123'}];

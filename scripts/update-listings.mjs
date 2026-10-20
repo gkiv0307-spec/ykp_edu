@@ -5,7 +5,7 @@
  *   node scripts/update-listings.mjs          실제 갱신
  *   node scripts/update-listings.mjs --dry    파일을 쓰지 않고 결과만 출력
  *
- * GitHub Actions 에서 매일 자동 실행된다. (.github/workflows/update-listings.yml)
+ * GitHub Actions 에서 하루 4번 자동 실행된다. (.github/workflows/update-listings.yml)
  */
 
 import { readFile, writeFile, mkdir, readdir, unlink } from 'node:fs/promises';
@@ -360,11 +360,14 @@ async function buildListing(item, fetcher = fetchText) {
   }
 
   /* 본문을 우선 보고, 빠진 값은 RSS 요약에서 메운다. */
+  const fromTitle = parseDetails(item.title);
   const fromBody = parseDetails(pageText);
   const fromRss = parseDetails(item.description);
   const d = {
     appraisal: fromBody.appraisal ?? fromRss.appraisal,
-    minBid: fromBody.minBid ?? fromRss.minBid,
+    /* 제목의 "최저가"는 현재 회차를 요약한 값이다. 본문에는 다음 회차의
+       가정 가격도 함께 적히므로, 명시된 제목 값을 가장 먼저 사용한다. */
+    minBid: fromTitle.minBid ?? fromBody.minBid ?? fromRss.minBid,
     saleDate: fromBody.saleDate ?? fromRss.saleDate,
     area: fromBody.area ?? fromRss.area,
     court: fromBody.court ?? fromRss.court ?? pageCourt,
