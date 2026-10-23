@@ -149,7 +149,7 @@ function pageFor(c, all, shell) {
       hasCourseInstance: {
         '@type': 'CourseInstance',
         ...(c.slug === 'question-pass' ? {courseMode: 'online'} : /오프라인/.test(c.method) ? {courseMode: 'onsite'} : {}),
-        ...(c.slug === 'beginner' ? {startDate: '2026-10-12'} : c.slug === 'intermediate' ? {startDate: '2026-10-13'} : {}),
+        ...(c.slug === 'beginner' ? {startDate: '2026-11-17'} : c.slug === 'intermediate' ? {startDate: '2026-11-16'} : {}),
         location: {
           '@type': 'Place',
           name: '옆커폰부동산에듀',
