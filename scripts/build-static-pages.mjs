@@ -72,9 +72,9 @@ function priceTable(courses) {
 function applyPage(shell, courses) {
   const content = '<article class="apply-page">'
     + '<nav class="listing-crumb" aria-label="현재 위치">'
-    + '<a href="/">홈</a><span>›</span><em>상담 신청</em></nav>'
+    + '<a href="/">홈</a><span>›</span><em id="apply-crumb">상담 신청</em></nav>'
 
-    + '<header class="apply-head">'
+    + '<header class="apply-head"><div id="consult-heading">'
     + '<p class="eyebrow dark"><span></span> 상담 신청</p>'
     + '<h1>어떤 물건을, 얼마에<br/>사야 할지 같이 계산해 드립니다.</h1>'
     + '<p class="apply-lead">연락처를 남겨주시면 <strong>영업일 기준 1일 안에</strong> 연락드립니다. '
@@ -82,18 +82,27 @@ function applyPage(shell, courses) {
     + '<ul class="apply-trust">'
     + '<li>상담료 없음</li><li>가입 절차 없음</li><li>전국 물건 가능</li>'
     + '</ul>'
-    + '</header>'
+    + '</div><div id="notify-heading" hidden>'
+    + '<p class="eyebrow dark"><span></span> 다음 기수 안내</p>'
+    + '<h1>다음 기수 알림 신청</h1>'
+    + '<p class="apply-lead">관심 있는 과정을 선택하고 연락처를 남겨주세요. 다음 기수 일정이 정해지면 학원에서 안내드립니다. 알림 신청은 수강 등록이 아닙니다.</p>'
+    + '</div></header>'
 
     + '<form class="apply-form" id="consult-form" novalidate>'
-    + '<div class="apply-field" data-item-wrap hidden>'
+    + '<div class="apply-field" data-consult-only data-item-wrap hidden>'
     + '<label for="f-item">문의 물건</label>'
     + '<input type="text" id="f-item" name="물건" readonly/>'
     + '</div>'
 
-    + '<div class="apply-field" data-course-wrap hidden>'
+    + '<div class="apply-field" data-consult-only data-course-wrap hidden>'
     + '<label for="f-course">문의 과정</label>'
     + '<input type="text" id="f-course" name="과정" readonly/>'
     + '</div>'
+    + '<div data-notify-only hidden><div class="apply-field">'
+    + '<label for="f-notify-course">관심 과정 <b aria-hidden="true">*</b><span class="sr-only">필수</span></label>'
+    + '<select id="f-notify-course" disabled><option value="">과정을 선택해 주세요</option><option value="beginner">초급반</option><option value="intermediate">중급반</option></select>'
+    + '<p class="apply-error" data-for="f-notify-course"></p>'
+    + '</div></div>'
 
     + '<div class="apply-row">'
     + '<div class="apply-field">'
@@ -108,7 +117,7 @@ function applyPage(shell, courses) {
     + '</div>'
     + '</div>'
 
-    + '<div class="apply-row">'
+    + '<div class="apply-row" data-consult-only>'
     + '<div class="apply-field">'
     + '<label for="f-interest">무엇이 궁금하신가요?</label>'
     + `<select id="f-interest" name="관심분야">${options(FIELDS.관심분야)}</select>`
@@ -119,18 +128,19 @@ function applyPage(shell, courses) {
     + '</div>'
     + '</div>'
 
-    + '<div class="apply-field">'
+    + '<div class="apply-field" data-consult-only>'
     + '<label for="f-msg">하고 싶은 말 <small>(선택)</small></label>'
     + '<textarea id="f-msg" name="문의내용" rows="4" '
     + 'placeholder="예) 수성구 쪽 3억 이하 아파트를 보고 있습니다. 대출이 얼마나 나올지 궁금합니다."></textarea>'
     + '</div>'
 
-    + '<div class="apply-row"><div class="apply-field"><label for="f-date">희망 상담일 (선택)</label><input id="f-date" name="희망상담일" type="date"/></div><div class="apply-field"><label for="f-time">희망 상담시간 (선택)</label><input id="f-time" name="희망상담시간" type="time"/></div></div>'
-    + '<p class="apply-lead">희망 일시를 남겨주시면 가능한 시간을 확인해 연락드립니다. 신청만으로 상담 예약이나 수강 좌석이 확정되지는 않습니다.</p>'
+    + '<div class="apply-row" data-consult-only><div class="apply-field"><label for="f-date">희망 상담일 (선택)</label><input id="f-date" name="희망상담일" type="date"/></div><div class="apply-field"><label for="f-time">희망 상담시간 (선택)</label><input id="f-time" name="희망상담시간" type="time"/></div></div>'
+    + '<p class="apply-lead" data-consult-only>희망 일시를 남겨주시면 가능한 시간을 확인해 연락드립니다. 신청만으로 상담 예약이나 수강 좌석이 확정되지는 않습니다.</p>'
     + '<label class="apply-agree">'
     + '<input type="checkbox" id="f-agree" name="개인정보동의" required/>'
-    + '<span>상담 연락을 위한 <strong>이름·연락처(필수)</strong>와 직접 입력한 관심분야·경매경험·문의내용·관심물건·과정·희망일시(선택)의 수집·이용에 동의합니다. '
+    + '<span data-consult-only>상담 연락을 위한 <strong>이름·연락처(필수)</strong>와 직접 입력한 관심분야·경매경험·문의내용·관심물건·과정·희망일시(선택)의 수집·이용에 동의합니다. '
     + '상담 및 수강 안내 목적으로 사용하며, 신청 정보는 접수일로부터 1년 보관 후 파기합니다. 삭제 요청은 053-281-0759로 접수합니다. 동의를 거부할 수 있으며 거부 시 이 폼의 접수는 어렵습니다.</span>'
+    + '<span data-notify-only hidden>다음 기수 안내를 위한 <strong>이름·연락처·관심 과정(필수)</strong>의 수집·이용에 동의합니다. 접수일로부터 1년간 보관 후 파기하며, 삭제는 053-281-0759로 요청할 수 있습니다. 동의를 거부할 수 있으며, 거부 시 알림 신청이 어렵습니다.</span>'
     + '</label>'
     + '<p class="apply-error" data-for="f-agree"></p>'
 
@@ -156,7 +166,7 @@ function applyPage(shell, courses) {
     canonical: `${SITE}/apply.html`,
     image: `${SITE}/assets/ykphone-logo-horizontal.png`,
     bodyClass: 'page-apply',
-    scripts: ['/js/consult-form.js?v=20260915'],
+    scripts: ['/js/consult-form.js?v=20261120-next-cohort'],
     jsonLd: [{
       '@context': 'https://schema.org',
       '@type': 'ContactPage',

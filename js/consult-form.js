@@ -20,12 +20,37 @@
   var submitBtn = form.querySelector('.apply-submit');
 
   var params = new URLSearchParams(location.search);
+  var notifyMode = params.get('notify') === 'next-cohort';
+  var notifyCourses = { beginner: '초급반', intermediate: '중급반' };
+  var notifySelect = document.getElementById('f-notify-course');
+  function isNotifyCourse(value) {
+    return Object.prototype.hasOwnProperty.call(notifyCourses, value);
+  }
+  if (notifyMode && notifySelect) {
+    document.title = '다음 기수 알림 신청 | 옆커폰부동산에듀';
+    document.getElementById('apply-crumb').textContent = '다음 기수 알림 신청';
+    document.getElementById('consult-heading').hidden = true;
+    document.getElementById('notify-heading').hidden = false;
+    form.querySelectorAll('[data-consult-only]').forEach(function (section) {
+      section.hidden = true;
+      section.querySelectorAll('input, select, textarea').forEach(function (field) { field.disabled = true; });
+    });
+    form.querySelectorAll('[data-notify-only]').forEach(function (section) { section.hidden = false; });
+    notifySelect.disabled = false;
+    notifySelect.required = true;
+    var preferred = params.get('course');
+    if (isNotifyCourse(preferred)) notifySelect.value = preferred;
+    notifySelect.addEventListener('change', function () { setError('f-notify-course', ''); });
+    submitBtn.textContent = '다음 기수 알림 신청';
+  } else {
+    notifyMode = false;
+  }
   var dateInput = document.getElementById('f-date');
   if (dateInput) dateInput.min = new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Seoul'});
 
   /* 물건 상세 페이지에서 넘어온 경우 어떤 물건인지 채워 둔다. */
   var item = params.get('item');
-  if (item) {
+  if (item && !notifyMode) {
     var wrap = form.querySelector('[data-item-wrap]');
     var input = form.querySelector('#f-item');
     if (wrap && input) { input.value = item; wrap.hidden = false; }
@@ -34,7 +59,7 @@
   /* 과정 페이지에서 넘어온 경우 어떤 과정인지 함께 담는다.
      이걸 안 담으면 상담 전화를 걸 때 무엇을 보고 왔는지 알 수 없다. */
   var course = params.get('course');
-  if (course) {
+  if (course && !notifyMode) {
     var cWrap = form.querySelector('[data-course-wrap]');
     var cInput = form.querySelector('#f-course');
     if (cWrap && cInput) { cInput.value = course; cWrap.hidden = false; }
@@ -75,7 +100,9 @@
     else if (!phoneOk(phone.value)) { setError('f-phone', '연락처 형식을 확인해 주세요. 예) 010-1234-5678'); ok = false; }
     else setError('f-phone', '');
 
-    if (!agree.checked) { setError('f-agree', '개인정보 수집에 동의해 주셔야 상담이 가능합니다.'); ok = false; }
+    if (notifyMode && !isNotifyCourse(notifySelect.value)) { setError('f-notify-course', '관심 과정을 선택해 주세요.'); ok = false; }
+    else if (notifyMode) setError('f-notify-course', '');
+    if (!agree.checked) { setError('f-agree', notifyMode ? '개인정보 수집에 동의해 주셔야 알림 신청이 가능합니다.' : '개인정보 수집에 동의해 주셔야 상담이 가능합니다.'); ok = false; }
     else setError('f-agree', '');
 
     if (!ok) {
@@ -115,7 +142,7 @@
       return;
     }
 
-    if (dateInput && dateInput.value && dateInput.value < dateInput.min) {
+    if (!notifyMode && dateInput && dateInput.value && dateInput.value < dateInput.min) {
       statusEl.textContent = '희망 상담일은 오늘 이후 날짜를 선택해 주세요.';
       dateInput.focus();
       return;
@@ -135,6 +162,11 @@
       data['관심분야'] = (data['관심분야'] || '') + ' — ' + data['과정'];
     }
 
+    if (notifyMode) {
+      var notifyLabel = '다음 기수 알림 신청 — ' + notifyCourses[notifySelect.value];
+      data['관심분야'] = notifyLabel;
+      data['문의내용'] = notifyLabel + '\n' + details.join('\n');
+    }
     submitBtn.disabled = true;
     statusEl.className = 'apply-status';
     statusEl.textContent = '보내는 중…';
@@ -168,7 +200,9 @@
           return;
         }
         statusEl.className = 'apply-status is-ok';
-        statusEl.textContent = '신청이 접수되었습니다. 희망 일시와 상담 가능 시간을 확인해 연락드리겠습니다.';
+        statusEl.textContent = notifyMode
+          ? '다음 기수 알림 신청이 접수되었습니다. 일정이 정해지면 학원에서 안내드립니다. 수강 등록은 별도입니다.'
+          : '신청이 접수되었습니다. 희망 일시와 상담 가능 시간을 확인해 연락드리겠습니다.';
       })
       .catch(function () {
         clearTimeout(timer);

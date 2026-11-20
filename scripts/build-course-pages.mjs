@@ -62,12 +62,14 @@ function pageFor(c, all, shell) {
   const canonical = `${SITE}/${OUT_DIR}/${c.slug}.html`;
   const applyHref = `/apply.html?course=${encodeURIComponent(c.name)}`;
   const enrollment = c.links.find((l) => /^https:\/\/naver\.me\//.test(l.href));
+  const signupHref = c.nextCohortHref || enrollment?.href || applyHref;
+  const signupAttrs = !c.nextCohortHref && enrollment ? ' target="_blank" rel="noopener noreferrer"' : '';
 
   const content = '<article class="course-page">'
     + '<nav class="listing-crumb" aria-label="현재 위치">'
     + '<a href="/">홈</a><span>›</span><a href="/#courses">수강료·과정</a>'
     + `<span>›</span><em>${esc(c.name)}</em></nav>`
-    + (c.banner ? `<a class="cp-banner" href="${esc(enrollment?.href || applyHref)}"${enrollment ? ' target="_blank" rel="noopener noreferrer"' : ''}><img src="${esc(c.banner)}" alt="${esc(c.name)} · ${esc(priceLabel(c))}" /></a>` : '')
+    + (c.banner ? `<a class="cp-banner" href="${esc(signupHref)}"${signupAttrs}><img src="${esc(c.banner)}" alt="${esc(c.name)} · ${esc(priceLabel(c))}" /></a>` : '')
 
     + '<header class="cp-head">'
     + `<p class="eyebrow dark"><span></span> ${esc(c.step)}</p>`
@@ -110,10 +112,11 @@ function pageFor(c, all, shell) {
     + '<section class="cp-support"><h2>등록 전 확인해 주세요</h2><p>잔여석·수업 시작 시각과 환불·연기·결석·영상복습·질문지원 조건은 결제 전에 확인해 주세요. 교육과 컨설팅은 별도 서비스이며, 낙찰과 투자수익을 보장하지 않습니다.</p></section>'
     + '<section class="cp-cta">'
     + `<h2>${esc(c.name)}, 나에게 맞을까요?</h2>`
-    + '<p>경매 경험과 목표를 들어보고 맞는 단계를 알려드립니다. '
-    + '억지로 상위 과정을 권하지 않습니다.</p>'
+    + (c.nextCohortHref
+      ? '<p>알림을 신청하시면 다음 기수 모집 일정이 정해졌을 때 안내해 드립니다. 알림 신청은 수강 등록이 아닙니다.</p>'
+      : '<p>경매 경험과 목표를 들어보고 맞는 단계를 알려드립니다. 억지로 상위 과정을 권하지 않습니다.</p>')
     + '<div class="cp-cta-actions">'
-    + `<a class="button button-primary" href="${esc(enrollment?.href || applyHref)}"${enrollment ? ' target="_blank" rel="noopener noreferrer"' : ''}>${enrollment ? '네이버 폼으로 수강 신청' : '이 과정 상담 신청'} <span>→</span></a>`
+    + `<a class="button button-primary" href="${esc(signupHref)}"${signupAttrs}>${c.nextCohortHref ? '다음 기수 알림 신청' : enrollment ? '네이버 폼으로 수강 신청 <span>→</span>' : '이 과정 상담 신청 <span>→</span>'}</a>`
     + '<a class="button button-ghost" href="https://open.kakao.com/o/s91CvTFf" target="_blank" rel="noreferrer">카카오톡으로 묻기</a>'
     + '<a class="button button-ghost" href="tel:0532810759">전화 053-281-0759</a>'
     + '</div>'

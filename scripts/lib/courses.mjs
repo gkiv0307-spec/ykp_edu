@@ -60,6 +60,7 @@ export async function readCourses(root) {
       : [];
 
     const actionBlock = body.match(/<div class="course-actions">([\s\S]*?)<\/div>/);
+    const nextCohortHref = actionBlock?.[1].match(/href="(\/apply\.html\?notify=next-cohort&amp;course=(?:beginner|intermediate))"/)?.[1].replace('&amp;', '&') || null;
     const links = actionBlock
       ? [...actionBlock[1].matchAll(/<a[^>]*href="(https?:\/\/[^"]+)"[^>]*>([\s\S]*?)<\/a>/g)]
         .map((m) => ({ href: m[1], label: text(m[2]) }))
@@ -85,6 +86,7 @@ export async function readCourses(root) {
       support,
       benefits,
       links,
+      nextCohortHref,
       banner: body.match(/<img src="(\/assets\/[^"]+)"/)?.[1] || null,
     };
   }).filter((c) => c.name);
